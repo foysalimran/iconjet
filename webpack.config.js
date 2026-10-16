@@ -15,5 +15,6 @@ module.exports = {
 	entry: {
 		...defaultEntry,
 		'admin/index': path.resolve( __dirname, 'src/admin/index.js' ),
+		'elementor/index': path.resolve( __dirname, 'src/elementor/index.js' ),
 	},
 };

@@ -48,12 +48,26 @@ final class Plugin {
 		add_action( 'rest_api_init', array( Settings::class, 'register' ) );
 		add_action( 'rest_api_init', array( new Rest_Controller(), 'register_routes' ) );
 
+		// Elementor adapter, only when Elementor is active. Elementor may load
+		// before or after this plugin, so handle both orders.
+		add_action( 'elementor/loaded', array( Integrations\Elementor::class, 'register' ) );
+		add_action( 'plugins_loaded', array( $this, 'maybe_load_elementor' ), 20 );
+
 		Blocks::register();
 		Shortcodes::register();
 		if ( is_admin() ) {
 			Admin::register();
 		}
 		Cache_Warmer::register();
+	}
+
+	/**
+	 * Load the Elementor adapter if Elementor finished loading before us.
+	 */
+	public function maybe_load_elementor() {
+		if ( did_action( 'elementor/loaded' ) ) {
+			Integrations\Elementor::register();
+		}
 	}
 
 	/**

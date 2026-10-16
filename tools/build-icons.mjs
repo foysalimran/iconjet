@@ -5,6 +5,7 @@
  *   assets/packs/{pack}.json   One file per pack (see PACK FORMAT below).
  *   assets/packs/index.json    Pack list with label, count, license, categories.
  *   assets/social/platforms.json
+ *   assets/elementor/{pack}.json  Icon names for Elementor's Icon Library (fetchJson format).
  *   licenses/{pack}-LICENSE.txt
  *
  * PACK FORMAT
@@ -41,6 +42,7 @@ const NM = path.join( ROOT, 'node_modules' );
 const OUT_PACKS = path.join( ROOT, 'assets/packs' );
 const OUT_SOCIAL = path.join( ROOT, 'assets/social' );
 const OUT_LICENSES = path.join( ROOT, 'licenses' );
+const OUT_ELEMENTOR = path.join( ROOT, 'assets/elementor' );
 
 const STROKE_ATTRS = {
 	fill: 'none',
@@ -406,6 +408,12 @@ async function buildPack( def ) {
 	};
 	const buf = writeJson( path.join( OUT_PACKS, `${ def.id }.json` ), pack );
 
+	// Elementor's Icon Library loads names with fetchJson ({ icons: [...] }).
+	// Font Awesome is skipped: Elementor ships it already.
+	if ( def.id !== 'fa' ) {
+		writeJson( path.join( OUT_ELEMENTOR, `${ def.id }.json` ), { icons: Object.keys( icons ) } );
+	}
+
 	// License files.
 	const licenseSrc = path.join( NM, def.npm, def.licenseFile );
 	fs.copyFileSync( licenseSrc, path.join( OUT_LICENSES, `${ def.id }-LICENSE.txt` ) );
@@ -475,7 +483,7 @@ function contrastText( hex ) {
 }
 
 async function main() {
-	for ( const dir of [ OUT_PACKS, OUT_SOCIAL, OUT_LICENSES ] ) {
+	for ( const dir of [ OUT_PACKS, OUT_SOCIAL, OUT_LICENSES, OUT_ELEMENTOR ] ) {
 		fs.mkdirSync( dir, { recursive: true } );
 	}
 

@@ -12,6 +12,15 @@
 	box-shadow: none;
 }
 
+/*
+ * Stroke icons (Lucide, Tabler, stroke-based custom icons) must not be
+ * filled. Page builders such as Elementor color icons with "svg { fill }";
+ * the icon color comes through currentColor (stroke) instead.
+ */
+svg.iconjet-icon[fill="none"] {
+	fill: none !important;
+}
+
 .iconjet-shortcode {
 	display: inline-block;
 	vertical-align: middle;
