@@ -22,3 +22,9 @@ package-lock.json
 composer.lock
 *.zip
 *.log
+
+# Strauss output: only the prefixed library source ships; Iconjet has its own
+# PSR-4 autoloader in iconjet.php. svg-scanner.php is a CLI tool.
+vendor-prefixed/autoload.php
+vendor-prefixed/composer
+vendor-prefixed/enshrined/svg-sanitize/src/svg-scanner.php

@@ -17,3 +17,6 @@
 .DS_Store
 .idea/
 .vscode/
+
+# Test runner
+.phpunit.result.cache

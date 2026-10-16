@@ -1,0 +1,140 @@
+<?php
+/**
+ * SVG allowlist for wp_kses().
+ *
+ * @package Iconjet
+ */
+
+namespace Iconjet;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Strict allowlist of SVG elements and attributes.
+ *
+ * Covers everything the bundled packs use (path, rect, circle, ellipse) plus
+ * the shapes, groups, gradients, clip paths and masks found in typical
+ * uploaded icons. Deliberately excluded: script, style, foreignObject, image,
+ * use, a, animate*, set, and every event handler attribute.
+ *
+ * Keys are lowercase because wp_kses() compares lowercased names.
+ */
+final class Kses {
+
+	/**
+	 * Cached allowlist.
+	 *
+	 * @var array|null
+	 */
+	private static $allowed = null;
+
+	/**
+	 * SVG names that are case-sensitive in XML. wp_kses() lowercases them.
+	 */
+	const CAMEL_CASE = array(
+		'viewBox',
+		'preserveAspectRatio',
+		'pathLength',
+		'gradientUnits',
+		'gradientTransform',
+		'spreadMethod',
+		'clipPathUnits',
+		'maskUnits',
+		'maskContentUnits',
+		'linearGradient',
+		'radialGradient',
+		'clipPath',
+	);
+
+	/**
+	 * Run SVG markup through wp_kses() with the allowlist, then restore the
+	 * camelCase names, so the SVG is also valid in XML contexts (feeds, XHTML).
+	 * HTML parsers accept either case.
+	 *
+	 * @param string $svg SVG markup.
+	 * @return string
+	 */
+	public static function sanitize( $svg ) {
+		$svg = wp_kses( $svg, self::svg() );
+
+		static $pattern = null, $map = null;
+		if ( null === $pattern ) {
+			$map     = array_combine( array_map( 'strtolower', self::CAMEL_CASE ), self::CAMEL_CASE );
+			$pattern = '/(<\/?|\s)(' . implode( '|', array_keys( $map ) ) . ')(?=[\s=>\/])/';
+		}
+		return preg_replace_callback(
+			$pattern,
+			static function ( $m ) use ( $map ) {
+				return $m[1] . $map[ $m[2] ];
+			},
+			$svg
+		);
+	}
+
+	/**
+	 * Allowed SVG markup for wp_kses().
+	 *
+	 * @return array
+	 */
+	public static function svg() {
+		if ( null !== self::$allowed ) {
+			return self::$allowed;
+		}
+
+		$paint = array_fill_keys(
+			array(
+				'fill',
+				'fill-opacity',
+				'fill-rule',
+				'stroke',
+				'stroke-width',
+				'stroke-linecap',
+				'stroke-linejoin',
+				'stroke-miterlimit',
+				'stroke-dasharray',
+				'stroke-dashoffset',
+				'stroke-opacity',
+				'opacity',
+				'clip-path',
+				'clip-rule',
+				'mask',
+				'transform',
+				'vector-effect',
+				'paint-order',
+				'id',
+			),
+			true
+		);
+
+		$shape = static function ( array $attrs ) use ( $paint ) {
+			return array_merge( $paint, array_fill_keys( $attrs, true ) );
+		};
+
+		$gradient = array_fill_keys(
+			array( 'id', 'gradientunits', 'gradienttransform', 'spreadmethod', 'x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'r', 'fx', 'fy', 'fr' ),
+			true
+		);
+
+		self::$allowed = array(
+			'svg'            => $shape(
+				array( 'xmlns', 'viewbox', 'width', 'height', 'class', 'role', 'aria-hidden', 'aria-label', 'focusable', 'style', 'preserveaspectratio' )
+			),
+			'g'              => $paint,
+			'path'           => $shape( array( 'd', 'pathlength' ) ),
+			'rect'           => $shape( array( 'x', 'y', 'width', 'height', 'rx', 'ry' ) ),
+			'circle'         => $shape( array( 'cx', 'cy', 'r' ) ),
+			'ellipse'        => $shape( array( 'cx', 'cy', 'rx', 'ry' ) ),
+			'line'           => $shape( array( 'x1', 'y1', 'x2', 'y2' ) ),
+			'polyline'       => $shape( array( 'points' ) ),
+			'polygon'        => $shape( array( 'points' ) ),
+			'defs'           => array(),
+			'lineargradient' => $gradient,
+			'radialgradient' => $gradient,
+			'stop'           => array_fill_keys( array( 'offset', 'stop-color', 'stop-opacity' ), true ),
+			'clippath'       => array_fill_keys( array( 'id', 'clippathunits', 'transform' ), true ),
+			'mask'           => array_fill_keys( array( 'id', 'maskunits', 'maskcontentunits', 'x', 'y', 'width', 'height' ), true ),
+		);
+
+		return self::$allowed;
+	}
+}

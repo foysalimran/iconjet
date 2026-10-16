@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<ruleset name="Iconjet">
+	<description>WordPress Coding Standards plus VIP security sniffs for Iconjet.</description>
+
+	<file>.</file>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/vendor-prefixed/*</exclude-pattern>
+	<exclude-pattern>/build/*</exclude-pattern>
+	<exclude-pattern>/dist/*</exclude-pattern>
+	<exclude-pattern>*.js</exclude-pattern>
+	<exclude-pattern>*.css</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg value="sp"/>
+	<arg name="colors"/>
+
+	<config name="minimum_wp_version" value="6.6"/>
+	<config name="testVersion" value="7.4-"/>
+
+	<rule ref="WordPress"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- Security-focused VIP sniffs (not the VIP platform rules). -->
+	<rule ref="WordPressVIPMinimum.Security"/>
+	<rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions"/>
+	<rule ref="WordPressVIPMinimum.Hooks"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array"><element value="iconjet"/></property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="iconjet"/>
+				<element value="Iconjet"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Tests: PHPUnit naming and fixtures. -->
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName"><exclude-pattern>/tests/*</exclude-pattern></rule>
+	<rule ref="Squiz.Commenting"><exclude-pattern>/tests/*</exclude-pattern></rule>
+	<rule ref="Generic.Commenting.DocComment.MissingShort"><exclude-pattern>/tests/*</exclude-pattern></rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals"><exclude-pattern>/tests/*</exclude-pattern></rule>
+	<rule ref="Universal.Operators.DisallowShortTernary"><exclude-pattern>/tests/*</exclude-pattern></rule>
+	<rule ref="WordPress.DB.DirectDatabaseQuery"><exclude-pattern>/tests/*</exclude-pattern></rule>
+	<rule ref="WordPress.PHP.DiscouragedPHPFunctions"><exclude-pattern>/tests/*</exclude-pattern></rule>
+</ruleset>

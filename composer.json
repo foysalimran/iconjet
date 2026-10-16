@@ -1,0 +1,54 @@
+{
+	"name": "themeatelier/iconjet",
+	"description": "Lightweight SVG icons and social icons for Gutenberg, Elementor, and any page builder.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=7.4",
+		"enshrined/svg-sanitize": "1.0.0"
+	},
+	"require-dev": {
+		"brianhenryie/strauss": "0.30.0",
+		"phpunit/phpunit": "^9.6",
+		"yoast/phpunit-polyfills": "^4.0",
+		"wp-phpunit/wp-phpunit": "7.1.1",
+		"wp-coding-standards/wpcs": "^3.4",
+		"automattic/vipwpcs": "^3.1",
+		"phpcompatibility/phpcompatibility-wp": "^2.1"
+	},
+	"config": {
+		"platform": {
+			"php": "7.4.33"
+		},
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"sort-packages": true
+	},
+	"extra": {
+		"strauss": {
+			"target_directory": "vendor-prefixed",
+			"namespace_prefix": "Iconjet\\Vendor\\",
+			"classmap_prefix": "Iconjet_Vendor_",
+			"constant_prefix": "ICONJET_VENDOR_",
+			"packages": [
+				"enshrined/svg-sanitize"
+			],
+			"delete_vendor_packages": false
+		}
+	},
+	"scripts": {
+		"prefix-namespaces": [
+			"strauss"
+		],
+		"post-install-cmd": [
+			"@prefix-namespaces"
+		],
+		"post-update-cmd": [
+			"@prefix-namespaces"
+		],
+		"lint": "phpcs",
+		"lint:fix": "phpcbf",
+		"test": "phpunit"
+	}
+}

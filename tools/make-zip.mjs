@@ -1,7 +1,7 @@
 /**
  * Builds a clean release zip: dist/iconjet.zip
  *
- * 1. Regenerates icon data and compiled JS.
+ * 1. Installs Composer deps (runs Strauss), regenerates icon data and compiled JS.
  * 2. Copies the plugin into dist/iconjet/, skipping everything in .distignore.
  * 3. Zips it and prints the size (WordPress.org limit: 10 MB).
  *
@@ -21,6 +21,7 @@ const LIMIT = 10 * 1024 * 1024;
 
 const run = ( cmd, args, opts = {} ) => execFileSync( cmd, args, { cwd: ROOT, stdio: 'inherit', ...opts } );
 
+run( 'composer', [ 'install', '--no-interaction', '--quiet' ] );
 run( 'npm', [ 'run', '-s', 'build:icons' ] );
 if ( fs.existsSync( path.join( ROOT, 'src' ) ) ) {
 	run( 'npm', [ 'run', '-s', 'build' ] );

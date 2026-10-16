@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" onload="alert(1)">
+	<script>alert('xss')</script>
+	<style>.a { fill: #e11d48; } .b { background: url(https://evil.example/x.png); }</style>
+	<path class="a" d="M12 2 2 22h20z" onclick="alert(2)" onmouseover="alert(3)"/>
+	<a xlink:href="javascript:alert(4)"><circle cx="12" cy="12" r="4"/></a>
+	<image href="https://evil.example/track.png" width="1" height="1"/>
+	<use xlink:href="https://evil.example/sprite.svg#icon"/>
+	<foreignObject width="10" height="10"><div xmlns="http://www.w3.org/1999/xhtml" onclick="alert(5)">x</div></foreignObject>
+	<rect x="1" y="1" width="4" height="4" style="fill: #0a66c2; behavior: url(evil.htc)"/>
+	<text>hello</text>
+</svg>
