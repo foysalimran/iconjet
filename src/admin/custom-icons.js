@@ -12,66 +12,19 @@ import {
 	Spinner,
 	TextControl,
 } from '@wordpress/components';
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { speak } from '@wordpress/a11y';
 
 import IconSvg from '../shared/svg';
 import CopyButton from '../shared/copy-button';
 import { clearCache } from '../shared/api';
-
-// Mirrors Svg_Sanitizer::MAX_BYTES; the server checks again.
-const MAX_BYTES = 51200;
-
-function formatSize( bytes ) {
-	return sprintf(
-		/* translators: %s: file size in KB. */
-		__( '%s KB', 'iconjet' ),
-		( bytes / 1024 ).toFixed( 1 )
-	);
-}
-
-/**
- * Upload one file. Resolves with { file, ok, icon?, error? }; never rejects.
- *
- * @param {File} file File.
- * @return {Promise<Object>} Result.
- */
-function uploadFile( file ) {
-	if ( ! /\.svg$/i.test( file.name ) ) {
-		return Promise.resolve( {
-			file,
-			ok: false,
-			error: __( 'Not an SVG file.', 'iconjet' ),
-		} );
-	}
-	if ( file.size > MAX_BYTES ) {
-		return Promise.resolve( {
-			file,
-			ok: false,
-			error: sprintf(
-				/* translators: 1: file size, 2: maximum size. */
-				__( 'Too large (%1$s). The maximum is %2$s.', 'iconjet' ),
-				formatSize( file.size ),
-				formatSize( MAX_BYTES )
-			),
-		} );
-	}
-	const body = new window.FormData();
-	body.append( 'file', file );
-	return apiFetch( {
-		path: '/iconjet/v1/custom-icons',
-		method: 'POST',
-		body,
-	} )
-		.then( ( icon ) => ( { file, ok: true, icon } ) )
-		.catch( ( error ) => ( {
-			file,
-			ok: false,
-			error:
-				( error && error.message ) ||
-				__( 'The upload failed.', 'iconjet' ),
-		} ) );
-}
+import { createQueue, createRows, updateRow } from './upload';
 
 export default function CustomIconsPage() {
 	const [ icons, setIcons ] = useState( null );
@@ -82,38 +35,56 @@ export default function CustomIconsPage() {
 	const [ deleting, setDeleting ] = useState( null );
 	const [ notice, setNotice ] = useState( null );
 
+	// Only the newest list request may update the list, so an older response
+	// that arrives late cannot replace newer data.
+	const listRequest = useRef( 0 );
+	const enqueue = useMemo( () => createQueue( apiFetch ), [] );
+
 	const load = useCallback( () => {
 		clearCache( 'custom' );
+		const request = ++listRequest.current;
 		return apiFetch( { path: '/iconjet/v1/custom-icons' } )
-			.then( ( pack ) =>
-				setIcons(
-					Object.keys( pack.icons ).map( ( name ) => ( {
-						name,
-						...pack.icons[ name ],
-					} ) )
-				)
+			.then(
+				( pack ) =>
+					request === listRequest.current &&
+					setIcons(
+						Object.keys( pack.icons ).map( ( name ) => ( {
+							name,
+							...pack.icons[ name ],
+						} ) )
+					)
 			)
-			.catch( () => setLoadError( true ) );
+			.catch(
+				() => request === listRequest.current && setLoadError( true )
+			);
 	}, [] );
 
 	useEffect( () => {
 		load();
 	}, [ load ] );
 
+	const pending = useRef( 0 );
+
 	const upload = async ( fileList ) => {
 		const files = Array.from( fileList || [] );
 		if ( ! files.length ) {
 			return;
 		}
+		// Rows appear at once, before any request finishes.
+		const rows = createRows( files );
+		setResults( ( current ) => [ ...current, ...rows ] );
+		pending.current += rows.length;
 		setUploading( true );
-		const done = [];
-		// One at a time, so the server's icon limit is applied in order.
-		for ( const file of files ) {
-			done.push( await uploadFile( file ) );
-			setResults( [ ...done ] );
-		}
-		setUploading( false );
-		const accepted = done.filter( ( r ) => r.ok ).length;
+
+		const done = await enqueue( rows, ( id, result ) => {
+			pending.current -= 1;
+			setResults( ( current ) => updateRow( current, id, result ) );
+			if ( pending.current === 0 ) {
+				setUploading( false );
+			}
+		} );
+
+		const accepted = done.filter( ( r ) => r.status === 'accepted' ).length;
 		speak(
 			sprintf(
 				/* translators: 1: accepted count, 2: rejected count. */
@@ -218,15 +189,16 @@ export default function CustomIconsPage() {
 							className="iconjet-custom__results"
 							aria-label={ __( 'Upload results', 'iconjet' ) }
 						>
-							{ results.map( ( result, index ) => (
+							{ results.map( ( result ) => (
 								<li
-									key={ index }
-									className={ `iconjet-custom__result is-${
-										result.ok ? 'accepted' : 'rejected'
-									}` }
+									key={ result.id }
+									className={ `iconjet-custom__result is-${ result.status }` }
 								>
 									<span className="iconjet-custom__result-preview">
-										{ result.ok && (
+										{ result.status === 'uploading' && (
+											<Spinner />
+										) }
+										{ result.status === 'accepted' && (
 											<IconSvg
 												icon={ result.icon }
 												size={ 32 }
@@ -237,23 +209,23 @@ export default function CustomIconsPage() {
 										{ result.file.name }
 									</span>
 									<span className="iconjet-custom__result-status">
-										{ result.ok
-											? sprintf(
-													/* translators: %s: icon reference. */
-													__(
-														'Accepted as %s (preview shows the sanitized result)',
-														'iconjet'
-													),
-													`custom:${ result.icon.name }`
-												)
-											: sprintf(
-													/* translators: %s: reason. */
-													__(
-														'Rejected: %s',
-														'iconjet'
-													),
-													result.error
-												) }
+										{ result.status === 'uploading' &&
+											__( 'Uploading…', 'iconjet' ) }
+										{ result.status === 'accepted' &&
+											sprintf(
+												/* translators: %s: icon reference. */
+												__(
+													'Accepted as %s (preview shows the sanitized result)',
+													'iconjet'
+												),
+												`custom:${ result.icon.name }`
+											) }
+										{ result.status === 'rejected' &&
+											sprintf(
+												/* translators: %s: reason. */
+												__( 'Rejected: %s', 'iconjet' ),
+												result.error
+											) }
 									</span>
 								</li>
 							) ) }

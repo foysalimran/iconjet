@@ -112,6 +112,10 @@
 	&.is-rejected {
 		border-color: #d63638;
 	}
+
+	&.is-uploading {
+		border-color: #dcdcde;
+	}
 }
 
 .iconjet-custom__result-preview {

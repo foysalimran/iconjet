@@ -30,3 +30,4 @@ vendor-prefixed/composer
 vendor-prefixed/enshrined/svg-sanitize/src/svg-scanner.php
 
 .eslintrc.js
+src/admin/test

@@ -11,6 +11,7 @@
 		"lint:js": "wp-scripts lint-js src",
 		"lint:css": "wp-scripts lint-style \"src/**/*.scss\"",
 		"lint:php": "composer run lint",
+		"test:js": "wp-scripts test-unit-js",
 		"zip": "node tools/make-zip.mjs"
 	},
 	"devDependencies": {
