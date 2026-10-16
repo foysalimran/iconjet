@@ -1,4 +1,4 @@
-=== Easy Icons ===
+=== Iconjet ===
 Contributors: faysal61
 Tags: icons, svg icons, social icons, elementor icons, icon block
 Requires at least: 6.6
@@ -12,11 +12,11 @@ Lightweight SVG icons and social icons for Gutenberg, Elementor, and any page bu
 
 == Description ==
 
-Easy Icons gives you a large library of modern SVG icons and ready-made social media icons that work everywhere on your WordPress site: in the block editor, in Elementor, and in any other page builder through shortcodes.
+Iconjet gives you a large library of modern SVG icons and ready-made social media icons that work everywhere on your WordPress site: in the block editor, in Elementor, and in any other page builder through shortcodes.
 
 Every feature is free. There is no Pro version and nothing is locked.
 
-= Why Easy Icons is different =
+= Why Iconjet is different =
 
 * **Only the icons you use are loaded.** Icons are output as inline SVG. No icon font files, no extra CSS loaded on every page.
 * **One plugin for every editor.** Gutenberg blocks, Elementor's built-in Icon Library, and shortcodes for every other builder. No need for a separate icon plugin per builder.
@@ -61,23 +61,23 @@ Turn any pack on or off from the settings page.
 
 Single icon:
 
-`[easyicons name="lucide:heart" size="32" color="#e11d48"]`
+`[iconjet name="lucide:heart" size="32" color="#e11d48"]`
 
 Icon with link:
 
-`[easyicons name="tabler:mail" size="24" link="mailto:hello@example.com" label="Email us"]`
+`[iconjet name="tabler:mail" size="24" link="mailto:hello@example.com" label="Email us"]`
 
 Social icons:
 
-`[easyicons_social facebook="https://facebook.com/yourpage" x="https://x.com/yourname" instagram="https://instagram.com/yourname" style="circle" brand_colors="yes" size="28"]`
+`[iconjet_social facebook="https://facebook.com/yourpage" x="https://x.com/yourname" instagram="https://instagram.com/yourname" style="circle" brand_colors="yes" size="28"]`
 
-Not sure about the syntax? Use the built-in Shortcode Generator under **Easy Icons → Shortcode Generator**, pick your icons, and copy the shortcode.
+Not sure about the syntax? Use the built-in Shortcode Generator under **Iconjet → Shortcode Generator**, pick your icons, and copy the shortcode.
 
 == Installation ==
 
-1. Go to **Plugins → Add New** and search for "Easy Icons".
+1. Go to **Plugins → Add New** and search for "Iconjet".
 2. Click **Install Now**, then **Activate**.
-3. Go to **Easy Icons → Settings** to choose which icon packs to enable.
+3. Go to **Iconjet → Settings** to choose which icon packs to enable.
 4. Use the icons:
    * Block editor: add the **Icon** or **Social Icons** block.
    * Elementor: open any icon control and choose **Icon Library**. The new packs appear in the sidebar.
@@ -91,7 +91,7 @@ Yes. Every feature and every icon pack is free. There is no Pro version.
 
 = Does it work with Divi, Bricks or Beaver Builder? =
 
-Yes, through shortcodes. Add a text or shortcode module and paste the shortcode. The Shortcode Generator makes this easy.
+Yes, through shortcodes. Add a text or shortcode module and paste the shortcode. The Shortcode Generator writes the shortcode for you.
 
 = Will it slow down my site? =
 
@@ -99,7 +99,7 @@ No. Icons are inline SVG and only the icons used on a page are output. No icon f
 
 = Does it conflict with Elementor's Font Awesome icons? =
 
-No. Easy Icons adds new packs to Elementor's Icon Library and leaves the built-in Font Awesome icons untouched.
+No. Iconjet adds new packs to Elementor's Icon Library and leaves the built-in Font Awesome icons untouched.
 
 = Can I upload my own icons? =
 
@@ -107,7 +107,7 @@ Yes. Administrators can upload SVG files. Every file is sanitized before it is s
 
 = What happens to my icons if I deactivate the plugin? =
 
-Icons added with the Icon and Social Icons blocks are saved as SVG in your content and stay visible, including their size, colors and shape. Hover colors need the plugin to be active. Shortcodes and Elementor icons from Easy Icons packs will stop displaying until the plugin is active again.
+Icons added with the Icon and Social Icons blocks are saved as SVG in your content and stay visible, including their size, colors and shape. Hover colors need the plugin to be active. Shortcodes and Elementor icons from Iconjet packs will stop displaying until the plugin is active again.
 
 == Screenshots ==
 

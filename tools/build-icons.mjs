@@ -1,5 +1,5 @@
 /**
- * Builds the Easy Icons pack data from the original npm packages.
+ * Builds the Iconjet pack data from the original npm packages.
  *
  * Output:
  *   assets/packs/{pack}.json   One file per pack (see PACK FORMAT below).
@@ -510,7 +510,7 @@ async function main() {
 	totalZip += deflated( indexBuf ) + social.zip;
 
 	const totalIcons = index.reduce( ( n, p ) => n + p.count, 0 );
-	console.log( '\nEasy Icons – icon data\n' );
+	console.log( '\nIconjet – icon data\n' );
 	console.log( rows.join( '\n' ) );
 	console.log( `social     ${ String( social.count ).padStart( 6 ) } platforms ${ fmt( social.raw ) } raw  ${ fmt( social.zip ) } zipped` );
 	console.log( '-'.repeat( 70 ) );

@@ -1,8 +1,8 @@
 /**
- * Builds a clean release zip: dist/easy-icons.zip
+ * Builds a clean release zip: dist/iconjet.zip
  *
  * 1. Regenerates icon data and compiled JS.
- * 2. Copies the plugin into dist/easy-icons/, skipping everything in .distignore.
+ * 2. Copies the plugin into dist/iconjet/, skipping everything in .distignore.
  * 3. Zips it and prints the size (WordPress.org limit: 10 MB).
  *
  * Usage: npm run zip
@@ -13,7 +13,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
-const SLUG = 'easy-icons';
+const SLUG = 'iconjet';
 const DIST = path.join( ROOT, 'dist' );
 const STAGE = path.join( DIST, SLUG );
 const ZIP = path.join( DIST, `${ SLUG }.zip` );
