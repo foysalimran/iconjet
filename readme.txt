@@ -25,7 +25,7 @@ Every feature is free. There is no Pro version and nothing is locked.
 = Works with =
 
 * **Gutenberg (Block Editor)** – Icon block and Social Icons block
-* **Elementor** – All icon packs added directly to Elementor's built-in Icon Library, so they work in every Elementor widget that has an icon option
+* **Elementor** – All icon packs except Font Awesome (which Elementor already includes) added directly to Elementor's built-in Icon Library, so they work in every Elementor widget that has an icon option
 * **Any other builder** – Divi, Beaver Builder, Bricks, Oxygen, WPBakery, the Classic Editor and widgets, using shortcodes
 
 = Icon packs included =
@@ -107,7 +107,7 @@ Yes. Administrators can upload SVG files. Every file is sanitized before it is s
 
 = What happens to my icons if I deactivate the plugin? =
 
-Icons added with the Icon and Social Icons blocks are saved as SVG in your content and stay visible. Shortcodes and Elementor icons from Easy Icons packs will stop displaying until the plugin is active again.
+Icons added with the Icon and Social Icons blocks are saved as SVG in your content and stay visible, including their size, colors and shape. Hover colors need the plugin to be active. Shortcodes and Elementor icons from Easy Icons packs will stop displaying until the plugin is active again.
 
 == Screenshots ==
 
@@ -122,6 +122,16 @@ Icons added with the Icon and Social Icons blocks are saved as SVG in your conte
 
 = 1.0.0 =
 * Initial release.
+
+== Source Code ==
+
+The plugin ships with its full, human-readable source. The JavaScript for the blocks and admin screens is in the `src/` folder and is compiled into `build/` with `@wordpress/scripts`. The icon data in `assets/packs/` is generated from the original npm packages by `tools/build-icons.mjs`.
+
+To rebuild:
+
+1. Run `npm install`
+2. Run `npm run build:icons` to regenerate the icon packs
+3. Run `npm run build` to compile the JavaScript
 
 == Third-Party Resources ==
 
