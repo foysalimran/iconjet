@@ -1,0 +1,21 @@
+// Editor-only styles shared by Iconjet blocks.
+
+.wp-block-iconjet-icon .components-placeholder,
+.wp-block-iconjet-social-icons .components-placeholder {
+	min-width: 280px;
+}
+
+.iconjet-social__item.is-empty {
+	opacity: 0.45;
+}
+
+.iconjet-social-editor__item {
+	display: flex;
+	gap: 4px;
+	align-items: flex-end;
+	margin-block-end: 12px;
+
+	.components-base-control {
+		flex: 1;
+	}
+}

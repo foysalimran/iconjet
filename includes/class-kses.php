@@ -71,17 +71,30 @@ final class Kses {
 			$svg
 		);
 
+		return self::restore_case( $svg );
+	}
+
+	/**
+	 * Restore camelCase SVG element and attribute names lowercased by kses.
+	 *
+	 * Also matches names inside JSON-encoded block attributes, where "<" is
+	 * written as \u003c.
+	 *
+	 * @param string $html Markup.
+	 * @return string
+	 */
+	public static function restore_case( $html ) {
 		static $pattern = null, $map = null;
 		if ( null === $pattern ) {
 			$map     = array_combine( array_map( 'strtolower', self::CAMEL_CASE ), self::CAMEL_CASE );
-			$pattern = '/(<\/?|\s)(' . implode( '|', array_keys( $map ) ) . ')(?=[\s=>\/])/';
+			$pattern = '/(<\/?|\\\\u003c\/?|\s)(' . implode( '|', array_keys( $map ) ) . ')(?=[\s=>\/\\\\])/';
 		}
 		return preg_replace_callback(
 			$pattern,
 			static function ( $m ) use ( $map ) {
 				return $m[1] . $map[ $m[2] ];
 			},
-			$svg
+			$html
 		);
 	}
 

@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
  * (X-WP-Nonce header sent by @wordpress/api-fetch). Every route checks a
  * capability in permission_callback.
  *
- *   GET    /packs                 edit_posts       Enabled packs + editor defaults.
+ *   GET    /packs                 edit_posts       Enabled packs, social data URL, editor defaults.
  *   GET    /custom-icons          edit_posts       Custom pack (same format as pack files).
  *   POST   /custom-icons          manage_options   Upload an SVG (multipart field "file").
  *   DELETE /custom-icons/{name}   manage_options   Delete a custom icon.
@@ -109,8 +109,9 @@ final class Rest_Controller {
 		$settings = Settings::get();
 		return rest_ensure_response(
 			array(
-				'packs'    => Icon_Registry::packs( true ),
-				'defaults' => array(
+				'packs'      => Icon_Registry::packs( true ),
+				'social_url' => add_query_arg( 'ver', ICONJET_VERSION, ICONJET_URL . 'assets/social/platforms.json' ),
+				'defaults'   => array(
 					'icon_size'    => $settings['icon_size'],
 					'social_style' => $settings['social_style'],
 				),

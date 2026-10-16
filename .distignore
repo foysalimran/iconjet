@@ -28,3 +28,5 @@ composer.lock
 vendor-prefixed/autoload.php
 vendor-prefixed/composer
 vendor-prefixed/enshrined/svg-sanitize/src/svg-scanner.php
+
+.eslintrc.js

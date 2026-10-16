@@ -48,6 +48,7 @@ final class Plugin {
 		add_action( 'rest_api_init', array( Settings::class, 'register' ) );
 		add_action( 'rest_api_init', array( new Rest_Controller(), 'register_routes' ) );
 
+		Blocks::register();
 		Cache_Warmer::register();
 	}
 

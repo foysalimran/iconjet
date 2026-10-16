@@ -163,6 +163,10 @@ function processSvg( source, packAttrs ) {
 		body = body.replace( / stroke="currentColor"/g, '' );
 	}
 
+	// Write self-closing tags as " />", the form wp_kses() outputs, so block
+	// attributes saved by users without unfiltered_html are not rewritten.
+	body = body.replace( /\s*\/>/g, ' />' );
+
 	const icon = { v: root.viewBox, b: body };
 
 	const overrides = {};

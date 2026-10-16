@@ -1,0 +1,48 @@
+/*
+ * Iconjet frontend styles.
+ *
+ * Loaded only on pages that output Iconjet markup. Size, shape and colors are
+ * inline in the markup; this file only adds hover and focus states.
+ * Uses no left/right properties, so it is RTL-safe as is.
+ */
+
+.iconjet-icon__link,
+.iconjet-social__link {
+	text-decoration: none;
+	box-shadow: none;
+}
+
+.iconjet-social__link {
+	transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.iconjet-social__link svg {
+	display: block;
+}
+
+.iconjet-social:not(.has-hover-color) a.iconjet-social__link:hover {
+	opacity: 0.85;
+}
+
+.iconjet-social.has-hover-color:not(.iconjet-social--icon) a.iconjet-social__link:hover,
+.iconjet-social.has-hover-color:not(.iconjet-social--icon) a.iconjet-social__link:focus-visible {
+	background-color: var(--iconjet-hover) !important;
+}
+
+.iconjet-social--icon.has-hover-color a.iconjet-social__link:hover,
+.iconjet-social--icon.has-hover-color a.iconjet-social__link:focus-visible {
+	color: var(--iconjet-hover) !important;
+}
+
+.iconjet-icon__link:focus-visible,
+.iconjet-social__link:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.iconjet-social__link {
+		transition: none;
+	}
+}

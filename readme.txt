@@ -24,7 +24,7 @@ Every feature is free. There is no Pro version and nothing is locked.
 
 = Works with =
 
-* **Gutenberg (Block Editor)** – Icon block and Social Icons block
+* **Gutenberg (Block Editor)** – Iconjet Icon block and Iconjet Social Icons block (they work in the Site Editor, Query Loops and the Navigation block too)
 * **Elementor** – All icon packs except Font Awesome (which Elementor already includes) added directly to Elementor's built-in Icon Library, so they work in every Elementor widget that has an icon option
 * **Any other builder** – Divi, Beaver Builder, Bricks, Oxygen, WPBakery, the Classic Editor and widgets, using shortcodes
 
@@ -79,7 +79,7 @@ Not sure about the syntax? Use the built-in Shortcode Generator under **Iconjet 
 2. Click **Install Now**, then **Activate**.
 3. Go to **Iconjet → Settings** to choose which icon packs to enable.
 4. Use the icons:
-   * Block editor: add the **Icon** or **Social Icons** block.
+   * Block editor: add the **Iconjet Icon** or **Iconjet Social Icons** block.
    * Elementor: open any icon control and choose **Icon Library**. The new packs appear in the sidebar.
    * Other builders: paste a shortcode into a text, code or shortcode module.
 
@@ -107,13 +107,13 @@ Yes. Administrators can upload SVG files. Every file is sanitized before it is s
 
 = What happens to my icons if I deactivate the plugin? =
 
-Icons added with the Icon and Social Icons blocks are saved as SVG in your content and stay visible, including their size, colors and shape. Hover colors need the plugin to be active. Shortcodes and Elementor icons from Iconjet packs will stop displaying until the plugin is active again.
+Icons added with the Iconjet Icon and Iconjet Social Icons blocks are saved as SVG in your content and stay visible, including their size, colors and shape. Hover colors need the plugin to be active. Shortcodes and Elementor icons from Iconjet packs will stop displaying until the plugin is active again.
 
 == Screenshots ==
 
 1. Icon picker with search and categories
-2. Icon block settings in the block editor
-3. Social Icons block with brand colors
+2. Iconjet Icon block settings in the block editor
+3. Iconjet Social Icons block with brand colors
 4. New icon packs inside Elementor's Icon Library
 5. Settings page with icon pack toggles
 6. Shortcode Generator

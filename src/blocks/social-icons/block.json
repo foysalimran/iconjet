@@ -1,0 +1,84 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "iconjet/social-icons",
+	"version": "1.0.0",
+	"title": "Iconjet Social Icons",
+	"category": "widgets",
+	"description": "Links to your social profiles with official brand colors.",
+	"keywords": [
+		"social",
+		"links",
+		"share",
+		"follow",
+		"iconjet"
+	],
+	"textdomain": "iconjet",
+	"attributes": {
+		"items": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object"
+			},
+			"role": "content"
+		},
+		"iconStyle": {
+			"type": "string",
+			"enum": [
+				"circle",
+				"square",
+				"rounded",
+				"icon"
+			]
+		},
+		"size": {
+			"type": "number",
+			"default": 28
+		},
+		"gap": {
+			"type": "number",
+			"default": 8
+		},
+		"brandColors": {
+			"type": "boolean",
+			"default": true
+		},
+		"iconColor": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverColor": {
+			"type": "string",
+			"default": ""
+		},
+		"openInNewTab": {
+			"type": "boolean",
+			"default": true
+		},
+		"nofollow": {
+			"type": "boolean",
+			"default": false
+		},
+		"justification": {
+			"type": "string",
+			"enum": [
+				"left",
+				"center",
+				"right"
+			]
+		}
+	},
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"spacing": {
+			"margin": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": [
+		"file:./index.css",
+		"iconjet"
+	]
+}
