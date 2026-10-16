@@ -292,7 +292,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							flipHorizontal,
 							flipVertical
 						) }
-						style={ { display: 'block' } }
 					/>
 				</span>
 			</div>

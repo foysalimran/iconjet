@@ -45,7 +45,6 @@ export default function save( props ) {
 				flipHorizontal,
 				flipVertical
 			) }
-			style={ { display: 'block' } }
 		/>
 	);
 

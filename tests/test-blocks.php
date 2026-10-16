@@ -47,15 +47,81 @@ class Test_Blocks extends WP_UnitTestCase {
 		$this->assertSame( $content, get_post( $post_id )->post_content );
 	}
 
-	public function test_kses_still_strips_dangerous_svg_for_authors() {
-		wp_set_current_user( self::factory()->user->create( array( 'role' => 'author' ) ) );
+	/**
+	 * An author saves an Iconjet block carrying script, event handlers,
+	 * foreignObject, external <use> references and external url() paint.
+	 * Everything outside the allowlist is stripped from the markup and from
+	 * the SVG stored in the block attributes; internal references stay.
+	 */
+	public function test_author_cannot_inject_through_an_iconjet_block() {
+		$author = self::factory()->user->create( array( 'role' => 'author' ) );
+		wp_set_current_user( $author );
 		kses_init();
-		$dirty = '<svg viewBox="0 0 1 1" onload="alert(1)"><script>alert(2)</script><path d="M0 0" onclick="x"/><use href="https://evil.example/a.svg#x"/></svg>';
-		$clean = wp_kses_post( $dirty );
-		$this->assertStringNotContainsString( 'onload', $clean );
-		$this->assertStringNotContainsString( '<script', $clean );
-		$this->assertStringNotContainsString( 'onclick', $clean );
-		$this->assertStringContainsString( '<path', $clean );
+
+		$body  = '<path d="M0 0h24v24H0z" onclick="alert(1)" fill="url(https://evil.example/p.svg#g)"/>'
+			. '<use href="https://evil.example/s.svg#a" fill="url(#ok)"/>'
+			. '<use xlink:href="javascript:alert(2)"/>'
+			. '<use href="#ok"/>';
+		$attrs = serialize_block_attributes(
+			array(
+				'icon' => 'custom:x',
+				'svg'  => array(
+					'v' => '0 0 24 24',
+					'b' => $body,
+					'a' => array( 'fill' => 'currentColor' ),
+				),
+			)
+		);
+		$html  = '<div style="display:flex" class="wp-block-iconjet-icon"><span class="iconjet-icon__box" style="display:inline-flex;line-height:0;background-image:url(https://evil.example/bg.png)">'
+			. '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" onload="alert(3)" style="background:url(https://evil.example/x.png)">'
+			. $body . '<script>alert(4)</script><foreignObject><div onclick="alert(5)">x</div></foreignObject>'
+			. '</svg></span></div>';
+
+		$post_id = wp_insert_post(
+			wp_slash(
+				array(
+					'post_title'   => 'Attack',
+					'post_status'  => 'publish',
+					'post_author'  => $author,
+					'post_content' => "<!-- wp:iconjet/icon $attrs -->\n$html\n<!-- /wp:iconjet/icon -->",
+				)
+			)
+		);
+		$saved   = get_post( $post_id )->post_content;
+		$blocks  = parse_blocks( $saved );
+		$stored  = $blocks[0]['attrs']['svg']['b'];
+
+		foreach ( array( $saved, $stored ) as $markup ) {
+			$lower = strtolower( $markup );
+			foreach ( array( 'onload', 'onclick', '<script', 'foreignobject', 'evil.example', 'javascript:' ) as $needle ) {
+				$this->assertStringNotContainsString( $needle, $lower, "Found $needle" );
+			}
+			$this->assertStringContainsString( '<use href="#ok"', $markup, 'Internal reference kept' );
+			$this->assertStringContainsString( 'fill="url(#ok)"', $markup, 'Internal url() kept' );
+		}
+		$this->assertStringContainsString( 'viewBox="0 0 24 24"', $saved );
+		$this->assertDoesNotMatchRegularExpression( '/<svg[^>]*style=/', $saved, 'No style on <svg> for authors' );
+	}
+
+	public function test_svg_is_not_allowed_outside_iconjet_post_saves() {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'author' ) ) );
+		$this->assertStringNotContainsString( '<svg', wp_kses_post( '<svg viewBox="0 0 1 1"><path d="M0 0"/></svg>' ) );
+
+		// Content without Iconjet blocks keeps core behavior: SVG is removed.
+		kses_init();
+		$post_id = wp_insert_post(
+			wp_slash(
+				array(
+					'post_title'   => 'Plain',
+					'post_content' => '<p>x</p><svg viewBox="0 0 1 1"><path d="M0 0"/></svg>',
+				)
+			)
+		);
+		$this->assertStringNotContainsString( '<svg', get_post( $post_id )->post_content );
+	}
+
+	public function test_plugin_does_not_change_safe_style_css() {
+		$this->assertFalse( has_filter( 'safe_style_css' ) );
 	}
 
 	public function test_style_loads_only_when_a_block_renders() {

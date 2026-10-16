@@ -99,6 +99,78 @@ final class Kses {
 	}
 
 	/**
+	 * Presentation attributes that may reference a paint server, clip path,
+	 * mask or marker with url(...).
+	 */
+	const URL_ATTRS = array( 'fill', 'stroke', 'clip-path', 'mask', 'filter', 'marker-start', 'marker-mid', 'marker-end' );
+
+	/**
+	 * Allowlist added to post kses while saving content with Iconjet blocks.
+	 *
+	 * Same as svg() but without the style attribute on <svg>, so users
+	 * without unfiltered_html cannot add CSS (and url()) through it. Saved
+	 * block markup never puts a style on the <svg>.
+	 *
+	 * @return array
+	 */
+	public static function svg_for_post() {
+		$allowed = self::svg();
+		unset( $allowed['svg']['style'] );
+		return $allowed;
+	}
+
+	/**
+	 * Remove references to anything outside the SVG from markup that kses
+	 * already sanitized:
+	 * - <use>: href / xlink:href must be "#id", otherwise the attribute is removed.
+	 * - fill, stroke, clip-path, mask, filter, marker-*: a url(...) value
+	 *   must be "url(#id)", otherwise the attribute is removed.
+	 * - style on Iconjet elements (class contains "iconjet"): declarations
+	 *   with url() are removed. Iconjet never writes url() in styles; core
+	 *   kses would otherwise allow e.g. background-image:url() for authors.
+	 *
+	 * @param string $html Sanitized markup.
+	 * @return string
+	 */
+	public static function harden( $html ) {
+		if ( ! is_string( $html ) || ( false === stripos( $html, '<use' ) && ! preg_match( '/url\s*\(/i', $html ) ) ) {
+			return $html;
+		}
+		$fragment = '/^#[A-Za-z_][\w.-]*$/';
+		$local    = '/^url\(\s*[\'"]?#[A-Za-z_][\w.-]*[\'"]?\s*\)$/i';
+
+		$tags = new \WP_HTML_Tag_Processor( $html );
+		while ( $tags->next_tag() ) {
+			if ( 'USE' === $tags->get_tag() ) {
+				foreach ( array( 'href', 'xlink:href' ) as $name ) {
+					$value = $tags->get_attribute( $name );
+					if ( null !== $value && ( ! is_string( $value ) || ! preg_match( $fragment, trim( $value ) ) ) ) {
+						$tags->remove_attribute( $name );
+					}
+				}
+			}
+			$class = $tags->get_attribute( 'class' );
+			$style = $tags->get_attribute( 'style' );
+			if ( is_string( $class ) && false !== strpos( $class, 'iconjet' ) && is_string( $style ) && preg_match( '/url\s*\(/i', $style ) ) {
+				$keep = array_filter(
+					array_map( 'trim', explode( ';', $style ) ),
+					static function ( $decl ) {
+						return '' !== $decl && ! preg_match( '/url\s*\(/i', $decl );
+					}
+				);
+				$tags->set_attribute( 'style', implode( ';', $keep ) );
+			}
+			foreach ( self::URL_ATTRS as $name ) {
+				$value = $tags->get_attribute( $name );
+				if ( is_string( $value ) && preg_match( '/url\s*\(/i', $value ) && ! preg_match( $local, trim( $value ) ) ) {
+					$tags->remove_attribute( $name );
+				}
+			}
+		}//end while
+		return $tags->get_updated_html();
+	}
+
+	/**
 	 * Allowed SVG markup for wp_kses().
 	 *
 	 * @return array

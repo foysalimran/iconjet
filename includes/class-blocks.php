@@ -28,9 +28,18 @@ final class Blocks {
 	 */
 	public static function register() {
 		add_action( 'init', array( __CLASS__, 'register_blocks' ) );
+
+		/*
+		 * Post content kses (wp_filter_post_kses, content_save_pre priority 10)
+		 * for users without unfiltered_html. The SVG allowlist is active only
+		 * between priority 9 and 11, and only for content with Iconjet blocks;
+		 * every other wp_kses_post() call is unchanged. At priority 20 the
+		 * result is hardened and SVG name case is restored.
+		 */
+		add_filter( 'content_save_pre', array( __CLASS__, 'begin_post_kses' ), 9 );
+		add_filter( 'content_save_pre', array( __CLASS__, 'end_post_kses' ), 11 );
+		add_filter( 'content_save_pre', array( __CLASS__, 'after_post_kses' ), 20 );
 		add_filter( 'wp_kses_allowed_html', array( __CLASS__, 'allow_svg_in_post_content' ), 10, 2 );
-		// After wp_filter_post_kses (priority 10).
-		add_filter( 'content_save_pre', array( __CLASS__, 'restore_svg_case' ), 20 );
 		add_filter( 'block_core_navigation_listable_blocks', array( __CLASS__, 'navigation_listable_blocks' ) );
 		foreach ( self::BLOCKS as $name ) {
 			add_filter( 'render_block_' . $name, array( __CLASS__, 'enqueue_style_on_render' ) );
@@ -80,6 +89,35 @@ final class Blocks {
 	}
 
 	/**
+	 * Whether the SVG allowlist is active (while saving Iconjet content).
+	 *
+	 * @var bool
+	 */
+	private static $allow_svg = false;
+
+	/**
+	 * Start of post kses: allow SVG if the content has Iconjet blocks.
+	 *
+	 * @param string $content Slashed post content.
+	 * @return string
+	 */
+	public static function begin_post_kses( $content ) {
+		self::$allow_svg = self::has_iconjet_blocks( $content );
+		return $content;
+	}
+
+	/**
+	 * End of post kses.
+	 *
+	 * @param string $content Slashed post content.
+	 * @return string
+	 */
+	public static function end_post_kses( $content ) {
+		self::$allow_svg = false;
+		return $content;
+	}
+
+	/**
 	 * Allow Iconjet's SVG allowlist in post content.
 	 *
 	 * Users without unfiltered_html (authors, contributors, and admins on
@@ -93,33 +131,95 @@ final class Blocks {
 	 * @return array
 	 */
 	public static function allow_svg_in_post_content( $tags, $context ) {
-		if ( 'post' !== $context || ! is_array( $tags ) ) {
+		if ( ! self::$allow_svg || 'post' !== $context || ! is_array( $tags ) ) {
 			return $tags;
 		}
-		foreach ( Kses::svg() as $tag => $attrs ) {
+		foreach ( Kses::svg_for_post() as $tag => $attrs ) {
 			$tags[ $tag ] = isset( $tags[ $tag ] ) && is_array( $tags[ $tag ] ) ? array_merge( $tags[ $tag ], $attrs ) : $attrs;
 		}
 		return $tags;
 	}
 
 	/**
-	 * Undo kses lowercasing of SVG names (viewBox, linearGradient...) in
-	 * content that contains Iconjet blocks.
-	 *
-	 * The kses filters lowercase attribute and element names, in the markup and in
-	 * block attributes. The block editor compares names case-sensitively, so
-	 * without this an author's saved block would be reported as invalid the
-	 * next time it is opened. Runs after kses, so it only renames; it cannot
-	 * add anything kses removed.
+	 * After post kses: harden SVG (only when kses ran) and restore name case.
 	 *
 	 * @param string $content Slashed post content.
 	 * @return string
 	 */
-	public static function restore_svg_case( $content ) {
-		if ( ! is_string( $content ) || false === strpos( $content, 'wp:iconjet/' ) ) {
+	public static function after_post_kses( $content ) {
+		if ( ! self::has_iconjet_blocks( $content ) ) {
 			return $content;
 		}
-		return wp_slash( Kses::restore_case( wp_unslash( $content ) ) );
+		$content = wp_unslash( $content );
+		if ( has_filter( 'content_save_pre', 'wp_filter_post_kses' ) ) {
+			$content = self::harden_content( $content );
+		}
+		return wp_slash( Kses::restore_case( $content ) );
+	}
+
+	/**
+	 * Apply Kses::harden() to the markup and to the SVG strings stored in
+	 * Iconjet block attributes (which the editor renders).
+	 *
+	 * @param string $content Unslashed post content.
+	 * @return string
+	 */
+	public static function harden_content( $content ) {
+		$blocks  = parse_blocks( $content );
+		$changed = false;
+		$blocks  = self::harden_blocks( $blocks, $changed );
+		if ( $changed ) {
+			$content = serialize_blocks( $blocks );
+		}
+		return Kses::harden( $content );
+	}
+
+	/**
+	 * Harden SVG strings in Iconjet block attributes, recursively.
+	 *
+	 * @param array $blocks  Parsed blocks.
+	 * @param bool  $changed Set to true when anything changed.
+	 * @return array
+	 */
+	private static function harden_blocks( array $blocks, &$changed ) {
+		foreach ( $blocks as &$block ) {
+			$attrs = &$block['attrs'];
+			if ( 'iconjet/icon' === $block['blockName'] && isset( $attrs['svg']['b'] ) && is_string( $attrs['svg']['b'] ) ) {
+				$clean = Kses::harden( $attrs['svg']['b'] );
+				if ( $clean !== $attrs['svg']['b'] ) {
+					$attrs['svg']['b'] = $clean;
+					$changed           = true;
+				}
+			}
+			if ( 'iconjet/social-icons' === $block['blockName'] && isset( $attrs['items'] ) && is_array( $attrs['items'] ) ) {
+				foreach ( $attrs['items'] as &$item ) {
+					if ( isset( $item['b'] ) && is_string( $item['b'] ) ) {
+						$clean = Kses::harden( $item['b'] );
+						if ( $clean !== $item['b'] ) {
+							$item['b'] = $clean;
+							$changed   = true;
+						}
+					}
+				}
+				unset( $item );
+			}
+			unset( $attrs );
+			if ( ! empty( $block['innerBlocks'] ) ) {
+				$block['innerBlocks'] = self::harden_blocks( $block['innerBlocks'], $changed );
+			}
+		}//end foreach
+		unset( $block );
+		return $blocks;
+	}
+
+	/**
+	 * Whether content contains Iconjet blocks.
+	 *
+	 * @param mixed $content Content.
+	 * @return bool
+	 */
+	private static function has_iconjet_blocks( $content ) {
+		return is_string( $content ) && false !== strpos( $content, 'wp:iconjet/' );
 	}
 
 	/**
