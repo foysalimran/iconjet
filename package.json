@@ -1,0 +1,27 @@
+{
+	"name": "easy-icons",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Lightweight SVG icons and social icons for Gutenberg, Elementor, and any page builder.",
+	"license": "GPL-2.0-or-later",
+	"type": "module",
+	"scripts": {
+		"build:icons": "node tools/build-icons.mjs",
+		"build": "wp-scripts build --webpack-src-dir=src --output-path=build",
+		"start": "wp-scripts start --webpack-src-dir=src --output-path=build",
+		"lint:js": "wp-scripts lint-js src",
+		"lint:css": "wp-scripts lint-style \"src/**/*.scss\"",
+		"lint:php": "composer run lint",
+		"zip": "node tools/make-zip.mjs"
+	},
+	"devDependencies": {
+		"@fortawesome/fontawesome-free": "7.3.1",
+		"@material-symbols/svg-400": "0.47.5",
+		"@phosphor-icons/core": "2.1.1",
+		"@tabler/icons": "3.48.0",
+		"bootstrap-icons": "1.13.1",
+		"lucide-static": "1.49.0",
+		"simple-icons": "16.33.0",
+		"svgo": "4.1.0"
+	}
+}

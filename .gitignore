@@ -1,0 +1,19 @@
+# Dependencies
+/node_modules/
+/vendor/
+
+# Generated (rebuild with: npm run build:icons && npm run build)
+/build/
+/assets/packs/
+/assets/social/
+/licenses/
+/vendor-prefixed/
+
+# Release
+/dist/
+*.zip
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

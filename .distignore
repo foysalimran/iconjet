@@ -1,0 +1,24 @@
+# Files and folders excluded from the release zip (npm run zip).
+# Source needed for review (src/, tools/, package.json, composer.json) stays in.
+.git
+.gitignore
+.distignore
+.DS_Store
+.editorconfig
+.idea
+.vscode
+node_modules
+vendor
+dist
+tests
+phpunit.xml.dist
+phpcs.xml.dist
+.phpcs.xml
+.phpunit.result.cache
+claude.md
+CLAUDE.md
+README.md
+package-lock.json
+composer.lock
+*.zip
+*.log
