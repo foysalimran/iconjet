@@ -43,6 +43,7 @@ final class Plugin {
 	 */
 	public function boot() {
 		add_action( 'init', array( $this, 'maybe_upgrade' ), 1 );
+		add_action( 'init', array( Custom_Icons::class, 'register_post_type' ) );
 		add_action( 'init', array( Settings::class, 'register' ) );
 		add_action( 'rest_api_init', array( Settings::class, 'register' ) );
 		add_action( 'rest_api_init', array( new Rest_Controller(), 'register_routes' ) );

@@ -13,9 +13,11 @@ defined( 'ABSPATH' ) || exit;
  * Strict allowlist of SVG elements and attributes.
  *
  * Covers everything the bundled packs use (path, rect, circle, ellipse) plus
- * the shapes, groups, gradients, clip paths and masks found in typical
- * uploaded icons. Deliberately excluded: script, style, foreignObject, image,
- * use, a, animate*, set, and every event handler attribute.
+ * the shapes, groups, gradients, clip paths, masks, symbols and internal
+ * <use> references found in typical uploaded icons (Figma exports reuse
+ * shapes with <use href="#id">). Deliberately excluded: script, style,
+ * foreignObject, image, a, animate*, set, and every event handler attribute.
+ * <use> is only kept when its href is a "#fragment" (see sanitize()).
  *
  * Keys are lowercase because wp_kses() compares lowercased names.
  */
@@ -56,6 +58,18 @@ final class Kses {
 	 */
 	public static function sanitize( $svg ) {
 		$svg = wp_kses( $svg, self::svg() );
+
+		// Defense in depth: keep <use> only with a single internal "#id" href.
+		// Svg_Sanitizer also checks that the id exists in the same SVG.
+		$svg = preg_replace_callback(
+			'/<use\b[^>]*>(?:\s*<\/use>)?/i',
+			static function ( $m ) {
+				$internal = preg_match( '/\shref="#[A-Za-z_][\w.-]*"/', $m[0] );
+				$count    = preg_match_all( '/\s(?:xlink:)?href\s*=/i', $m[0] );
+				return ( $internal && 1 === $count ) ? $m[0] : '';
+			},
+			$svg
+		);
 
 		static $pattern = null, $map = null;
 		if ( null === $pattern ) {
@@ -127,6 +141,8 @@ final class Kses {
 			'line'           => $shape( array( 'x1', 'y1', 'x2', 'y2' ) ),
 			'polyline'       => $shape( array( 'points' ) ),
 			'polygon'        => $shape( array( 'points' ) ),
+			'use'            => $shape( array( 'href', 'x', 'y', 'width', 'height' ) ),
+			'symbol'         => array_fill_keys( array( 'id', 'viewbox', 'preserveaspectratio', 'x', 'y', 'width', 'height' ), true ),
 			'defs'           => array(),
 			'lineargradient' => $gradient,
 			'radialgradient' => $gradient,

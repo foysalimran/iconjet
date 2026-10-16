@@ -103,6 +103,7 @@ final class Svg_Sanitizer {
 
 		self::inline_css( $doc );
 		self::prune( $root );
+		self::resolve_uses( $doc );
 
 		$attrs = array();
 		foreach ( self::ROOT_PAINT as $name ) {
@@ -179,6 +180,48 @@ final class Svg_Sanitizer {
 				$element->removeChild( $child );
 			}
 		}
+	}
+
+	/**
+	 * Keep <use> only when it references an element inside this SVG.
+	 *
+	 * The href (or legacy xlink:href) must be "#id" and the id must exist in
+	 * the document after pruning, and must not be the <use> itself or one of
+	 * its ancestors (a reference loop). Anything else, including external
+	 * and data: URLs, removes the <use>. Kept references are written as plain
+	 * href, which all current browsers support.
+	 *
+	 * @param \DOMDocument $doc Document.
+	 */
+	private static function resolve_uses( \DOMDocument $doc ) {
+		$xlink = 'http://www.w3.org/1999/xlink';
+		$ids   = array();
+		foreach ( ( new \DOMXPath( $doc ) )->query( '//*[@id]' ) as $el ) {
+			$ids[ $el->getAttribute( 'id' ) ] = $el;
+		}
+
+		foreach ( iterator_to_array( $doc->getElementsByTagName( 'use' ) ) as $use ) {
+			$href = $use->hasAttribute( 'href' ) ? $use->getAttribute( 'href' ) : $use->getAttributeNS( $xlink, 'href' );
+			$use->removeAttribute( 'href' );
+			$use->removeAttributeNS( $xlink, 'href' );
+
+			$target = null;
+			if ( preg_match( '/^#([A-Za-z_][\w.-]*)$/', trim( $href ), $m ) && isset( $ids[ $m[1] ] ) ) {
+				$target = $ids[ $m[1] ];
+				for ( $node = $use; $node; $node = $node->parentNode ) {
+					if ( $node === $target ) {
+						$target = null;
+						break;
+					}
+				}
+			}
+
+			if ( $target ) {
+				$use->setAttribute( 'href', '#' . $m[1] );
+			} elseif ( $use->parentNode ) {
+				$use->parentNode->removeChild( $use );
+			}
+		}//end foreach
 	}
 
 	/**

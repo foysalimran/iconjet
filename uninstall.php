@@ -10,12 +10,32 @@
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 /**
- * Delete Iconjet options for the current site.
+ * Delete Iconjet options and custom icon posts for the current site.
  */
 function iconjet_uninstall_site() {
-	foreach ( array( 'iconjet_settings', 'iconjet_custom_icons', 'iconjet_icon_cache', 'iconjet_version' ) as $iconjet_option ) {
+	foreach ( array( 'iconjet_settings', 'iconjet_icon_cache', 'iconjet_version' ) as $iconjet_option ) {
 		delete_option( $iconjet_option );
 	}
+
+	// Custom icons: one post per icon in the iconjet_icon post type. The
+	// post type is not registered during uninstall, so query every status.
+	do {
+		$iconjet_query = new WP_Query(
+			array(
+				'post_type'              => 'iconjet_icon',
+				'post_status'            => array_keys( get_post_stati() ),
+				'fields'                 => 'ids',
+				'posts_per_page'         => 100,
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			)
+		);
+		$iconjet_ids   = $iconjet_query->posts;
+		foreach ( $iconjet_ids as $iconjet_id ) {
+			wp_delete_post( $iconjet_id, true );
+		}
+	} while ( $iconjet_ids );
 }
 
 if ( is_multisite() ) {
@@ -26,7 +46,7 @@ if ( is_multisite() ) {
 		)
 	);
 	foreach ( $iconjet_site_ids as $iconjet_site_id ) {
-		// Only options are deleted, so no plugins or theme need to load on the switched site.
+		// Only options and posts are deleted, so no plugins or theme need to load on the switched site.
 		switch_to_blog( $iconjet_site_id ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog
 		iconjet_uninstall_site();
 		restore_current_blog();

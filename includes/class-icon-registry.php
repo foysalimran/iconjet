@@ -90,7 +90,7 @@ final class Icon_Registry {
 			$packs[]     = $pack;
 		}
 
-		$custom_count = count( Custom_Icons::all() );
+		$custom_count = Custom_Icons::count();
 		if ( $custom_count ) {
 			$packs[] = array(
 				'id'         => self::CUSTOM_PACK,
