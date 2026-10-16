@@ -169,6 +169,35 @@ final class Custom_Icons {
 	}
 
 	/**
+	 * Change an icon's label. The name (used in "custom:name" references in
+	 * content) never changes, so existing blocks and shortcodes keep working.
+	 *
+	 * @param string $name  Icon name.
+	 * @param string $label New label.
+	 * @return array|\WP_Error Updated icon.
+	 */
+	public static function rename( $name, $label ) {
+		$post  = self::find_post( $name );
+		$label = sanitize_text_field( $label );
+		if ( ! $post ) {
+			return new \WP_Error( 'iconjet_not_found', __( 'Icon not found.', 'iconjet' ) );
+		}
+		if ( '' === $label ) {
+			return new \WP_Error( 'iconjet_label_empty', __( 'The name cannot be empty.', 'iconjet' ) );
+		}
+		wp_update_post(
+			wp_slash(
+				array(
+					'ID'         => $post->ID,
+					'post_title' => $label,
+				)
+			)
+		);
+		unset( self::$cache[ $name ] );
+		return array( 'name' => $name ) + self::get( $name );
+	}
+
+	/**
 	 * Delete a custom icon.
 	 *
 	 * @param string $name Icon name.
@@ -197,6 +226,7 @@ final class Custom_Icons {
 				'b' => $icon['b'],
 				'a' => $icon['a'],
 				't' => array( strtolower( $icon['label'] ) ),
+				'l' => $icon['label'],
 			);
 		}
 		return array(

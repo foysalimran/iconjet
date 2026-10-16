@@ -71,6 +71,11 @@ final class Svg_Sanitizer {
 			return new \WP_Error( 'iconjet_svg_too_large', __( 'SVG files must be 50 KB or smaller.', 'iconjet' ) );
 		}
 
+		// DTDs and entities enable XXE and billion-laughs attacks; icons never need them.
+		if ( preg_match( '/<!(DOCTYPE|ENTITY)/i', $dirty ) ) {
+			return new \WP_Error( 'iconjet_svg_doctype', __( 'The file contains a DOCTYPE or entity declarations, which are not allowed for security reasons. Export the SVG again without them.', 'iconjet' ) );
+		}
+
 		$sanitizer = new Sanitizer();
 		$sanitizer->removeRemoteReferences( true );
 		$sanitizer->removeXMLTag( true );

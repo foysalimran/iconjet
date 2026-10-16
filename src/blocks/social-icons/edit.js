@@ -7,21 +7,19 @@ import {
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
-	Button,
-	ComboboxControl,
 	PanelBody,
 	Placeholder,
 	RangeControl,
 	SelectControl,
 	Spinner,
-	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { useEffect, useMemo, useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 
 import IconSvg from '../../shared/svg';
 import { getPacks, getPlatforms } from '../../shared/api';
-import { withScheme } from '../../shared/url';
+import SocialProfiles from '../../shared/social-profiles';
+import { STYLE_OPTIONS } from '../../shared/social-styles';
 import {
 	DEFAULT_STYLE,
 	glyphSize,
@@ -31,35 +29,6 @@ import {
 	listStyle,
 } from './shared';
 import blockIcon from './block-icon';
-
-const STYLE_OPTIONS = [
-	{ value: 'circle', label: __( 'Circle', 'iconjet' ) },
-	{ value: 'rounded', label: __( 'Rounded', 'iconjet' ) },
-	{ value: 'square', label: __( 'Square', 'iconjet' ) },
-	{ value: 'icon', label: __( 'Icon only', 'iconjet' ) },
-];
-
-/**
- * Keep only the platform fields the block saves.
- *
- * @param {Object} platform Platform from platforms.json.
- * @return {Object} Item.
- */
-function toItem( platform ) {
-	const item = {
-		id: platform.id,
-		url: '',
-		label: platform.label,
-		color: platform.color,
-		fg: platform.fg,
-		v: platform.v,
-		b: platform.b,
-	};
-	if ( platform.a ) {
-		item.a = platform.a;
-	}
-	return item;
-}
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -92,55 +61,30 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: listStyle( attributes ),
 	} );
 
-	const options = useMemo(
-		() =>
-			( platforms || [] )
-				.filter( ( p ) => ! items.some( ( item ) => item.id === p.id ) )
-				.map( ( p ) => ( { value: p.id, label: p.label } ) ),
-		[ platforms, items ]
-	);
+	const onChange = ( next ) => setAttributes( { items: next } );
+	// The first platform added also fixes the style to the site default.
+	const onAdd = ( next ) =>
+		setAttributes(
+			iconStyle
+				? { items: next }
+				: { items: next, iconStyle: defaultStyle }
+		);
 
-	const addItem = ( id ) => {
-		const platform = id && platforms.find( ( p ) => p.id === id );
-		if ( ! platform ) {
-			return;
-		}
-		const next = { items: [ ...items, toItem( platform ) ] };
-		if ( ! iconStyle ) {
-			next.iconStyle = defaultStyle;
-		}
-		setAttributes( next );
-	};
-
-	const updateItem = ( index, changes ) =>
-		setAttributes( {
-			items: items.map( ( item, i ) =>
-				i === index ? { ...item, ...changes } : item
-			),
-		} );
-
-	const moveItem = ( index, offset ) => {
-		const next = [ ...items ];
-		const [ moved ] = next.splice( index, 1 );
-		next.splice( index + offset, 0, moved );
-		setAttributes( { items: next } );
-	};
-
-	const removeItem = ( index ) =>
-		setAttributes( { items: items.filter( ( _, i ) => i !== index ) } );
-
-	const addControl = platforms ? (
-		<ComboboxControl
-			__nextHasNoMarginBottom
-			__next40pxDefaultSize
-			label={ __( 'Add a platform', 'iconjet' ) }
-			value={ null }
-			options={ options }
-			onChange={ addItem }
-		/>
-	) : (
-		! loadError && <Spinner />
-	);
+	let profiles = null;
+	if ( platforms ) {
+		profiles = (
+			<SocialProfiles
+				items={ items }
+				platforms={ platforms }
+				onChange={ onChange }
+				onAdd={ onAdd }
+			/>
+		);
+	} else if ( loadError ) {
+		profiles = __( 'The social platforms could not be loaded.', 'iconjet' );
+	} else {
+		profiles = <Spinner />;
+	}
 
 	if ( ! items.length ) {
 		return (
@@ -153,12 +97,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						'iconjet'
 					) }
 				>
-					{ loadError
-						? __(
-								'The social platforms could not be loaded.',
-								'iconjet'
-							)
-						: addControl }
+					{ profiles }
 				</Placeholder>
 			</div>
 		);
@@ -180,74 +119,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<InspectorControls>
 				<PanelBody title={ __( 'Profiles', 'iconjet' ) }>
-					{ items.map( ( item, index ) => (
-						<div
-							className="iconjet-social-editor__item"
-							key={ item.id }
-						>
-							<TextControl
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-								type="url"
-								label={ item.label }
-								placeholder={
-									( platforms &&
-										(
-											platforms.find(
-												( p ) => p.id === item.id
-											) || {}
-										).placeholder ) ||
-									''
-								}
-								value={ item.url }
-								onChange={ ( value ) =>
-									updateItem( index, {
-										url: withScheme( value ),
-									} )
-								}
-							/>
-							<Button
-								icon="arrow-up-alt2"
-								size="small"
-								label={ sprintf(
-									/* translators: %s: platform name. */ __(
-										'Move %s up',
-										'iconjet'
-									),
-									item.label
-								) }
-								disabled={ index === 0 }
-								onClick={ () => moveItem( index, -1 ) }
-							/>
-							<Button
-								icon="arrow-down-alt2"
-								size="small"
-								label={ sprintf(
-									/* translators: %s: platform name. */ __(
-										'Move %s down',
-										'iconjet'
-									),
-									item.label
-								) }
-								disabled={ index === items.length - 1 }
-								onClick={ () => moveItem( index, 1 ) }
-							/>
-							<Button
-								icon="no-alt"
-								size="small"
-								isDestructive
-								label={ sprintf(
-									/* translators: %s: platform name. */ __(
-										'Remove %s',
-										'iconjet'
-									),
-									item.label
-								) }
-								onClick={ () => removeItem( index ) }
-							/>
-						</div>
-					) ) }
-					{ addControl }
+					{ profiles }
 				</PanelBody>
 
 				<PanelBody title={ __( 'Settings', 'iconjet' ) }>
@@ -347,7 +219,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ items.map( ( item ) => (
 					<li
 						key={ item.id }
-						className={ `iconjet-social__item${ item.url ? '' : ' is-empty' }` }
+						className={ `iconjet-social__item${
+							item.url ? '' : ' is-empty'
+						}` }
 						style={ { margin: 0 } }
 					>
 						<span
@@ -357,7 +231,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								item.url
 									? item.label
 									: sprintf(
-											/* translators: %s: platform name. */ __(
+											/* translators: %s: platform name. */
+											__(
 												'%s: add a URL in the block settings',
 												'iconjet'
 											),

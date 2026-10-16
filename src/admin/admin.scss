@@ -1,0 +1,220 @@
+// Iconjet admin pages. Logical properties keep the layout RTL-safe.
+
+.iconjet-admin-wrap {
+	max-width: 1280px;
+
+	.components-card {
+		margin-block-end: 16px;
+	}
+
+	.components-card__header h2 {
+		margin: 0;
+		font-size: 14px;
+	}
+
+	// Visible focus for every interactive element, including plain buttons.
+	a:focus-visible,
+	button:focus-visible,
+	input:focus-visible,
+	select:focus-visible,
+	textarea:focus-visible {
+		outline: 2px solid var(--wp-admin-theme-color, #3858e9);
+		outline-offset: 2px;
+	}
+}
+
+.iconjet-settings {
+	max-width: 720px;
+
+	.components-toggle-control {
+		margin-block-end: 16px;
+	}
+}
+
+// Icon Library: browser + details side by side.
+.iconjet-library {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 300px;
+	gap: 16px;
+	align-items: start;
+
+	@media (max-width: 960px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.iconjet-library__details {
+	position: sticky;
+	inset-block-start: 48px;
+
+	.components-button {
+		margin-block-end: 8px;
+	}
+}
+
+.iconjet-library__preview {
+	display: flex;
+	justify-content: center;
+	padding: 24px;
+	background: #f6f7f7;
+	border-radius: 4px;
+	color: #1e1e1e;
+}
+
+.iconjet-library__name {
+	margin: 12px 0 4px;
+	font-size: 16px;
+	overflow-wrap: anywhere;
+}
+
+.iconjet-library__label {
+	margin: 16px 0 4px;
+	font-weight: 600;
+}
+
+.iconjet-library__code,
+.iconjet-custom__ref {
+	display: block;
+	margin-block-end: 8px;
+	padding: 6px 8px;
+	word-break: break-all;
+}
+
+// Custom icons.
+.iconjet-custom__drop {
+	position: relative;
+	padding: 24px;
+	border: 2px dashed #c3c4c7;
+	border-radius: 4px;
+	text-align: center;
+}
+
+.iconjet-custom__results {
+	margin: 16px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.iconjet-custom__result {
+	display: grid;
+	grid-template-columns: 40px minmax(0, 1fr);
+	gap: 2px 12px;
+	align-items: center;
+	padding: 8px 12px;
+	border-inline-start: 4px solid;
+	margin-block-end: 8px;
+	background: #f6f7f7;
+
+	&.is-accepted {
+		border-color: #00a32a;
+	}
+
+	&.is-rejected {
+		border-color: #d63638;
+	}
+}
+
+.iconjet-custom__result-preview {
+	grid-row: span 2;
+	display: flex;
+	justify-content: center;
+}
+
+.iconjet-custom__result-name {
+	font-weight: 600;
+	word-break: break-all;
+}
+
+.iconjet-custom__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.iconjet-custom__card {
+	padding: 12px;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.iconjet-custom__preview {
+	display: flex;
+	justify-content: center;
+	padding: 16px;
+	margin-block-end: 8px;
+	background: #f6f7f7;
+	color: #1e1e1e;
+}
+
+.iconjet-custom__label {
+	display: block;
+	margin-block-end: 4px;
+	overflow-wrap: anywhere;
+}
+
+.iconjet-custom__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-block-start: 8px;
+}
+
+// Shortcode Generator.
+.iconjet-generator {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 16px;
+	align-items: start;
+
+	@media (max-width: 960px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.components-base-control,
+	.components-toggle-control {
+		margin-block-end: 16px;
+	}
+}
+
+.iconjet-generator__icon {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.iconjet-generator__output {
+	position: sticky;
+	inset-block-start: 48px;
+}
+
+.iconjet-generator__preview {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 120px;
+	padding: 24px;
+	margin-block-end: 16px;
+	background: #f6f7f7;
+	border-radius: 4px;
+
+	> ul {
+		width: 100%;
+		margin: 0;
+	}
+}
+
+.iconjet-profiles__item {
+	display: flex;
+	gap: 4px;
+	align-items: flex-end;
+	margin-block-end: 12px;
+
+	.components-base-control {
+		flex: 1;
+		margin-block-end: 0;
+	}
+}

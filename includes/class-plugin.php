@@ -49,6 +49,10 @@ final class Plugin {
 		add_action( 'rest_api_init', array( new Rest_Controller(), 'register_routes' ) );
 
 		Blocks::register();
+		Shortcodes::register();
+		if ( is_admin() ) {
+			Admin::register();
+		}
 		Cache_Warmer::register();
 	}
 

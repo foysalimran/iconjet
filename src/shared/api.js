@@ -104,6 +104,7 @@ function normalizePack( data ) {
 			b: icon.b,
 			a: { ...attrs, ...( icon.a || {} ) },
 			c: icon.c || [],
+			label: icon.l,
 			hay: [ name.replace( /[-_]/g, ' ' ), ...( icon.t || [] ) ]
 				.join( ' ' )
 				.toLowerCase(),

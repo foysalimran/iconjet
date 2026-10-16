@@ -67,7 +67,23 @@ class Test_Svg_Sanitizer extends WP_UnitTestCase {
 	}
 
 	public function test_xxe_payload_is_rejected() {
-		$this->assertWPError( Svg_Sanitizer::sanitize( $this->fixture( 'xxe.svg' ) ) );
+		$result = Svg_Sanitizer::sanitize( $this->fixture( 'xxe.svg' ) );
+		$this->assertWPError( $result );
+		$this->assertSame( 'iconjet_svg_doctype', $result->get_error_code() );
+	}
+
+	public function test_rename_keeps_reference() {
+		$icon    = Custom_Icons::add( $this->fixture( 'clean.svg' ), 'Old name' );
+		$renamed = Custom_Icons::rename( $icon['name'], 'New <b>name</b>' );
+		$this->assertSame( 'old-name', $renamed['name'] );
+		$this->assertSame( 'New name', $renamed['label'] );
+		$this->assertWPError( Custom_Icons::rename( $icon['name'], '' ) );
+		$this->assertWPError( Custom_Icons::rename( 'missing', 'x' ) );
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'editor' ) ) );
+		$request = new \WP_REST_Request( 'POST', '/iconjet/v1/custom-icons/old-name' );
+		$request->set_body_params( array( 'label' => 'Nope' ) );
+		$this->assertSame( 403, rest_do_request( $request )->get_status() );
 	}
 
 	public function test_rejects_bad_input() {

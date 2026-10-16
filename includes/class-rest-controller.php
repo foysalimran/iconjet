@@ -19,7 +19,9 @@ defined( 'ABSPATH' ) || exit;
  *   GET    /packs                 edit_posts       Enabled packs, social data URL, editor defaults.
  *   GET    /custom-icons          edit_posts       Custom pack (same format as pack files).
  *   POST   /custom-icons          manage_options   Upload an SVG (multipart field "file").
+ *   POST   /custom-icons/{name}   manage_options   Rename (label only; the reference never changes).
  *   DELETE /custom-icons/{name}   manage_options   Delete a custom icon.
+ *   POST   /preview               edit_posts       Render [iconjet] / [iconjet_social] for the generator.
  *
  * Settings are saved through the core /wp/v2/settings endpoint (see Settings).
  */
@@ -38,6 +40,13 @@ final class Rest_Controller {
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_packs' ),
 				'permission_callback' => array( $this, 'can_edit' ),
+				'args'                => array(
+					'all' => array(
+						'type'        => 'boolean',
+						'default'     => false,
+						'description' => 'Include disabled packs (administrators only).',
+					),
+				),
 			)
 		);
 
@@ -64,18 +73,54 @@ final class Rest_Controller {
 			)
 		);
 
+		$name_arg = array(
+			'type'     => 'string',
+			'pattern'  => '^[a-z0-9_-]+$',
+			'required' => true,
+		);
 		register_rest_route(
 			self::NAMESPACE_V1,
 			'/custom-icons/(?P<name>[a-z0-9_-]+)',
 			array(
-				'methods'             => \WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'delete_custom_icon' ),
-				'permission_callback' => array( $this, 'can_manage' ),
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'rename_custom_icon' ),
+					'permission_callback' => array( $this, 'can_manage' ),
+					'args'                => array(
+						'name'  => $name_arg,
+						'label' => array(
+							'type'              => 'string',
+							'required'          => true,
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+					),
+				),
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_custom_icon' ),
+					'permission_callback' => array( $this, 'can_manage' ),
+					'args'                => array( 'name' => $name_arg ),
+				),
+			)
+		);
+
+		register_rest_route(
+			self::NAMESPACE_V1,
+			'/preview',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'preview' ),
+				'permission_callback' => array( $this, 'can_edit' ),
 				'args'                => array(
-					'name' => array(
+					'type' => array(
 						'type'     => 'string',
-						'pattern'  => '^[a-z0-9_-]+$',
+						'enum'     => array( 'icon', 'social' ),
 						'required' => true,
+					),
+					'atts' => array(
+						'type'                 => 'object',
+						'required'             => true,
+						'additionalProperties' => array( 'type' => 'string' ),
 					),
 				),
 			)
@@ -103,13 +148,15 @@ final class Rest_Controller {
 	/**
 	 * GET /packs
 	 *
+	 * @param \WP_REST_Request $request Request.
 	 * @return \WP_REST_Response
 	 */
-	public function get_packs() {
+	public function get_packs( \WP_REST_Request $request ) {
 		$settings = Settings::get();
+		$all      = $request->get_param( 'all' ) && current_user_can( 'manage_options' );
 		return rest_ensure_response(
 			array(
-				'packs'      => Icon_Registry::packs( true ),
+				'packs'      => Icon_Registry::packs( ! $all ),
 				'social_url' => add_query_arg( 'ver', ICONJET_VERSION, ICONJET_URL . 'assets/social/platforms.json' ),
 				'defaults'   => array(
 					'icon_size'    => $settings['icon_size'],
@@ -171,6 +218,33 @@ final class Rest_Controller {
 		$response = rest_ensure_response( $icon );
 		$response->set_status( 201 );
 		return $response;
+	}
+
+	/**
+	 * POST /custom-icons/{name}
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function rename_custom_icon( \WP_REST_Request $request ) {
+		$icon = Custom_Icons::rename( (string) $request->get_param( 'name' ), (string) $request->get_param( 'label' ) );
+		if ( is_wp_error( $icon ) ) {
+			$icon->add_data( array( 'status' => 'iconjet_not_found' === $icon->get_error_code() ? 404 : 400 ) );
+			return $icon;
+		}
+		return rest_ensure_response( $icon );
+	}
+
+	/**
+	 * POST /preview: the generator preview uses the frontend shortcode callbacks.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function preview( \WP_REST_Request $request ) {
+		$atts = (array) $request->get_param( 'atts' );
+		$html = 'social' === $request->get_param( 'type' ) ? Shortcodes::social( $atts ) : Shortcodes::icon( $atts );
+		return rest_ensure_response( array( 'html' => $html ) );
 	}
 
 	/**
