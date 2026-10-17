@@ -21,6 +21,16 @@ svg.iconjet-icon[fill="none"] {
 	fill: none !important;
 }
 
+/*
+ * Elementor's Social Icons widget gives icons their color through
+ * "svg { fill }" and the --e-social-icon-icon-color variable (white by
+ * default). Stroke icons follow that variable instead of the link color,
+ * which is the same grey as the item background.
+ */
+.elementor-social-icon svg.iconjet-icon[fill="none"] {
+	color: var(--e-social-icon-icon-color, currentcolor);
+}
+
 .iconjet-shortcode {
 	display: inline-block;
 	vertical-align: middle;

@@ -109,4 +109,64 @@ class Test_Elementor extends WP_UnitTestCase {
 		Elementor::warm_cache( $document, array() );
 		$this->assertNotNull( Icon_Cache::get( 'tabler:rocket' ) );
 	}
+
+	/**
+	 * Markup as Elementor 4.3 prints a Social Icons item.
+	 */
+	private function social_item_html( $id, $icon_value ) {
+		$parts  = explode( ' ', $icon_value, 2 );
+		$social = str_replace( 'fa-', '', $parts[1] );
+		return '<a class="' . esc_attr( 'elementor-icon elementor-social-icon elementor-social-icon-' . $social . ' elementor-repeater-item-' . $id ) . '" href="#">'
+			. '<span class="elementor-screen-only">' . esc_html( ucwords( $social ) ) . '</span></a>';
+	}
+
+	public function test_social_icons_widget_gets_brand_classes_and_names() {
+		$items = array(
+			array( '_id' => 'aaa1111', 'social_icon' => $this->icon( 'simple', 'facebook' ) ),
+			array( '_id' => 'bbb2222', 'social_icon' => $this->icon( 'tabler', 'heart' ) ),
+			array(
+				'_id'         => 'ccc3333',
+				'social_icon' => array(
+					'library' => 'fa-brands',
+					'value'   => 'fab fa-facebook',
+				),
+			),
+		);
+		$html = '';
+		foreach ( $items as $item ) {
+			$html .= $this->social_item_html( $item['_id'], $item['social_icon']['value'] );
+		}
+		$widget = new class( $items ) {
+			private $items;
+			public function __construct( $items ) {
+				$this->items = $items;
+			}
+			public function get_name() {
+				return 'social-icons';
+			}
+			public function get_settings_for_display() {
+				return array( 'social_icon_list' => $this->items );
+			}
+		};
+
+		$out = Elementor::social_icons_content( $html, $widget );
+
+		$this->assertStringContainsString( 'elementor-repeater-item-aaa1111 iconjet-brand-facebook"', $out );
+		$this->assertStringContainsString( '<span class="elementor-screen-only">Facebook</span>', $out );
+		// Not a platform logo: icon name, no brand class.
+		$this->assertStringContainsString( '<span class="elementor-screen-only">Heart</span>', $out );
+		$this->assertStringContainsString( 'elementor-repeater-item-bbb2222"', $out );
+		// Elementor's own icons are untouched.
+		$this->assertStringContainsString( 'elementor-repeater-item-ccc3333"', $out );
+		$this->assertTrue( wp_style_is( Elementor::SOCIAL_STYLE, 'enqueued' ) );
+	}
+
+	public function test_other_widgets_are_untouched() {
+		$widget = new class() {
+			public function get_name() {
+				return 'icon';
+			}
+		};
+		$this->assertSame( '<p>x</p>', Elementor::social_icons_content( '<p>x</p>', $widget ) );
+	}
 }

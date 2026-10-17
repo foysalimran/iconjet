@@ -49,4 +49,19 @@ final class Social_Platforms {
 		$all = self::all();
 		return isset( $all[ $id ] ) ? $all[ $id ] : null;
 	}
+
+	/**
+	 * The platform whose logo is an icon reference.
+	 *
+	 * @param string $ref Icon reference "pack:name".
+	 * @return array|null
+	 */
+	public static function by_icon( $ref ) {
+		foreach ( self::all() as $platform ) {
+			if ( isset( $platform['icon'] ) && $platform['icon'] === $ref ) {
+				return $platform;
+			}
+		}
+		return null;
+	}
 }

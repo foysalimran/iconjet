@@ -13,6 +13,7 @@ use Iconjet\Custom_Icons;
 use Iconjet\Icon_Registry;
 use Iconjet\Icon_Renderer;
 use Iconjet\Settings;
+use Iconjet\Social_Platforms;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -42,6 +43,15 @@ defined( 'ABSPATH' ) || exit;
  * Font Awesome is not added (Elementor ships it). Disabled packs are left out
  * of the editor's Icon Library but stay registered on the frontend, so
  * existing content keeps rendering.
+ *
+ * Social Icons widget: Elementor colors items by an "elementor-social-icon-{name}"
+ * class that only matches its Font Awesome names, so other libraries get its
+ * grey default. It also builds the item's screen reader text from the icon
+ * classes. For items whose icon is a social platform logo from platforms.json,
+ * social_icons_content() adds "iconjet-brand-{platform}" (colored by
+ * assets/elementor/social-brands.css, enqueued only then) and replaces that
+ * text with the platform name (other Iconjet icons: the icon name). The editor script does the same in the editor.
+ * The widget's own "Custom" and hover colors still take precedence.
  */
 final class Elementor {
 
@@ -52,6 +62,11 @@ final class Elementor {
 	 * Packs never offered in Elementor.
 	 */
 	const SKIP = array( 'fa' );
+
+	/**
+	 * Stylesheet handle for brand colors in the Social Icons widget.
+	 */
+	const SOCIAL_STYLE = 'iconjet-elementor-social';
 
 	/**
 	 * Whether hooks are registered.
@@ -73,6 +88,100 @@ final class Elementor {
 		add_action( 'elementor/preview/enqueue_scripts', array( __CLASS__, 'enqueue_editor_script' ) );
 		add_action( 'elementor/preview/enqueue_styles', array( Blocks::class, 'enqueue_style' ) );
 		add_action( 'elementor/document/after_save', array( __CLASS__, 'warm_cache' ), 10, 2 );
+		add_filter( 'elementor/widget/render_content', array( __CLASS__, 'social_icons_content' ), 10, 2 );
+		add_action( 'elementor/preview/enqueue_styles', array( __CLASS__, 'enqueue_social_style' ) );
+		// Registered early: Elementor's element cache re-enqueues handles by name.
+		add_action( 'init', array( __CLASS__, 'register_social_style' ) );
+	}
+
+	/**
+	 * Register the Social Icons brand color stylesheet.
+	 */
+	public static function register_social_style() {
+		if ( ! wp_style_is( self::SOCIAL_STYLE, 'registered' ) ) {
+			wp_register_style( self::SOCIAL_STYLE, ICONJET_URL . 'assets/elementor/social-brands.css', array(), ICONJET_VERSION );
+		}
+	}
+
+	/**
+	 * Enqueue the Social Icons brand color stylesheet.
+	 */
+	public static function enqueue_social_style() {
+		self::register_social_style();
+		wp_enqueue_style( self::SOCIAL_STYLE );
+	}
+
+	/**
+	 * Brand colors and screen reader names for Iconjet social logos in
+	 * Elementor's Social Icons widget (see the class comment).
+	 *
+	 * @param string $content Widget HTML.
+	 * @param object $widget  Widget instance.
+	 * @return string
+	 */
+	public static function social_icons_content( $content, $widget ) {
+		if ( ! is_object( $widget ) || ! method_exists( $widget, 'get_name' ) || 'social-icons' !== $widget->get_name() ) {
+			return $content;
+		}
+		$settings = $widget->get_settings_for_display();
+		if ( empty( $settings['social_icon_list'] ) || ! is_array( $settings['social_icon_list'] ) ) {
+			return $content;
+		}
+
+		$branded = false;
+		foreach ( $settings['social_icon_list'] as $item ) {
+			$branded = self::brand_social_item( $content, $item ) || $branded;
+		}
+
+		if ( $branded ) {
+			self::enqueue_social_style();
+		}
+		return $content;
+	}
+
+	/**
+	 * Brand class and screen reader name for one Social Icons item that uses
+	 * an Iconjet icon.
+	 *
+	 * @param string $content Widget HTML, changed in place.
+	 * @param array  $item    Repeater item.
+	 * @return bool Whether the brand class was added.
+	 */
+	private static function brand_social_item( &$content, $item ) {
+		if ( empty( $item['_id'] ) || empty( $item['social_icon'] ) ) {
+			return false;
+		}
+		$ref = self::ref_from_icon( $item['social_icon'] );
+		if ( '' === $ref ) {
+			return false;
+		}
+		$platform = Social_Platforms::by_icon( $ref );
+
+		// Elementor's text: ucwords() of the icon value after its first class.
+		// Use the platform name, or the icon name as Elementor does for its own icons.
+		$parts = explode( ' ', $item['social_icon']['value'], 2 );
+		$label = $platform ? $platform['label'] : ucwords( str_replace( array( '-', '_' ), ' ', substr( $ref, strpos( $ref, ':' ) + 1 ) ) );
+		if ( ! empty( $parts[1] ) ) {
+			$content = str_replace(
+				'<span class="elementor-screen-only">' . esc_html( ucwords( str_replace( 'fa-', '', $parts[1] ) ) ) . '</span>',
+				'<span class="elementor-screen-only">' . esc_html( $label ) . '</span>',
+				$content
+			);
+		}
+		if ( ! $platform ) {
+			return false;
+		}
+
+		// The repeater class is the last class on the item's link.
+		$item_class = 'elementor-repeater-item-' . $item['_id'];
+		$count      = 0;
+		$content    = str_replace(
+			esc_attr( $item_class ) . '"',
+			esc_attr( $item_class . ' iconjet-brand-' . $platform['id'] ) . '"',
+			$content,
+			$count
+		);
+		return $count > 0;
 	}
 
 	/**
@@ -220,11 +329,18 @@ final class Elementor {
 				$packs[ $id ] = Icon_Registry::pack_url( $id );
 			}
 		}
+
+		// Social platform logos: icon reference => [ platform id, label ].
+		$brands = array();
+		foreach ( Social_Platforms::all() as $platform ) {
+			$brands[ $platform['icon'] ] = array( $platform['id'], $platform['label'] );
+		}
 		wp_add_inline_script(
 			'iconjet-elementor',
 			'window.iconjetElementor = ' . wp_json_encode(
 				array(
 					'packs'  => $packs,
+					'brands' => $brands,
 					'custom' => rest_url( 'iconjet/v1/custom-icons' ),
 					'nonce'  => wp_create_nonce( 'wp_rest' ),
 				)

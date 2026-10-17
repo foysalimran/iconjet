@@ -6,8 +6,12 @@
  * iconjet-e-{pack}--{name}"></i>. This script fills each one with the SVG
  * from the plugin's own pack files (no icon font). It is loaded only in the
  * Elementor editor and its preview iframe (see Integrations\Elementor).
+ *
+ * Social Icons widget: items whose icon is a social platform logo get the
+ * "iconjet-brand-{platform}" class (brand colors) and the platform name,
+ * matching what Integrations\Elementor does on the frontend.
  */
-const CONFIG = window.iconjetElementor || { packs: {} };
+const CONFIG = window.iconjetElementor || { packs: {}, brands: {} };
 const SELECTOR = 'i.iconjet-e';
 const CLASS_RE = /^iconjet-e-([a-z0-9-]+?)--([a-z0-9_-]+)$/;
 const ATTRS = [
@@ -86,9 +90,35 @@ function svgMarkup( pack, icon ) {
 	return svg.outerHTML;
 }
 
+function brand( ref ) {
+	return ( CONFIG.brands || {} )[ `${ ref.pack }:${ ref.name }` ] || null;
+}
+
+// Brand color class on Social Icons widget items.
+function markSocialItem( el, ref ) {
+	const link = el.closest( 'a.elementor-social-icon' );
+	if ( ! link ) {
+		return;
+	}
+	const platform = brand( ref );
+	const wanted = platform ? `iconjet-brand-${ platform[ 0 ] }` : '';
+	Array.from( link.classList ).forEach( ( name ) => {
+		if ( name.startsWith( 'iconjet-brand-' ) && name !== wanted ) {
+			link.classList.remove( name );
+		}
+	} );
+	if ( wanted ) {
+		link.classList.add( wanted );
+	}
+}
+
 function hydrate( el ) {
 	const ref = iconRef( el );
-	if ( ! ref || el.dataset.iconjet === ref.key ) {
+	if ( ! ref ) {
+		return;
+	}
+	markSocialItem( el, ref );
+	if ( el.dataset.iconjet === ref.key ) {
 		return;
 	}
 	el.dataset.iconjet = ref.key;
@@ -137,6 +167,49 @@ function start() {
 		attributes: true,
 		attributeFilter: [ 'class' ],
 	} );
+}
+
+/*
+ * Editor window: Elementor names Social Icons items (panel titles, item
+ * class, screen reader text) from the icon classes. Use the platform instead.
+ */
+function addNetworkNameFilter() {
+	window.elementor.hooks.addFilter(
+		'elementor/social_icons/network_name',
+		( social, iconsControl, fallbackControl, toUpperCase ) => {
+			const value = iconsControl && iconsControl.value;
+			if ( typeof value !== 'string' ) {
+				return social;
+			}
+			const ref = value
+				.split( /\s+/ )
+				.map( ( name ) => CLASS_RE.exec( name ) )
+				.find( Boolean );
+			if ( ! ref ) {
+				return social;
+			}
+			const platform = brand( { pack: ref[ 1 ], name: ref[ 2 ] } );
+			// Label for panel titles; id where Elementor builds a class name.
+			if ( platform ) {
+				return toUpperCase ? platform[ 1 ] : platform[ 0 ];
+			}
+			return toUpperCase
+				? ref[ 2 ]
+						.split( /[-_]/ )
+						.map(
+							( w ) => w.charAt( 0 ).toUpperCase() + w.slice( 1 )
+						)
+						.join( ' ' )
+				: ref[ 2 ];
+		}
+	);
+}
+
+if ( window.elementor && window.elementor.hooks ) {
+	addNetworkNameFilter();
+} else if ( window.jQuery ) {
+	// Fired only in the editor window, not in the preview iframe.
+	window.jQuery( window ).on( 'elementor:init', addNetworkNameFilter );
 }
 
 if ( document.body ) {
