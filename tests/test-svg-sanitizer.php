@@ -228,4 +228,43 @@ class Test_Svg_Sanitizer extends WP_UnitTestCase {
 		$this->assertSame( 'gone', get_option( 'iconjet_settings', 'gone' ) );
 		$this->assertSame( 'gone', get_option( 'iconjet_icon_cache', 'gone' ) );
 	}
+
+	public function test_single_color_root_fill_becomes_current_color() {
+		$icon = Svg_Sanitizer::sanitize( $this->fixture( 'svgrepo.svg' ) );
+		$this->assertIsArray( $icon );
+		$this->assertSame( 'currentColor', $icon['a']['fill'] );
+		$this->assertStringNotContainsString( '#000000', $icon['b'] );
+
+		// The block, shortcode or Elementor color now applies.
+		$svg = Icon_Renderer::render_data( $icon, array( 'color' => '#bc0606' ) );
+		$this->assertStringContainsString( 'fill="currentColor"', $svg );
+		$this->assertStringNotContainsString( '#000000', $svg );
+	}
+
+	public function test_single_color_on_shapes_becomes_current_color() {
+		// Figma-style: fill="none" on the root, black shapes, a white clip rect.
+		$icon = Svg_Sanitizer::sanitize( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><g clip-path="url(#c)"><path d="M2 2h20v20H2z" fill="black"/><path d="M6 6h12v12H6z" fill="#000"/></g><defs><clipPath id="c"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>' );
+		$this->assertSame( 'none', $icon['a']['fill'] );
+		$this->assertSame( 2, substr_count( $icon['b'], 'fill="currentColor"' ) );
+		$this->assertStringContainsString( 'fill="white"', $icon['b'] );
+
+		// Stroke icon.
+		$icon = Svg_Sanitizer::sanitize( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 12h16" style="fill:none;stroke:rgb(0, 0, 0);stroke-width:2"/></svg>' );
+		$this->assertStringContainsString( 'stroke="currentColor"', $icon['b'] );
+	}
+
+	public function test_multicolor_and_masked_icons_keep_their_colors() {
+		$icon = Svg_Sanitizer::sanitize( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#000000"><path d="M2 2h20v20H2z"/><path d="M6 6h12v12H6z" fill="#ffffff"/></svg>' );
+		$this->assertSame( '#000000', $icon['a']['fill'] );
+		$this->assertStringContainsString( 'fill="#ffffff"', $icon['b'] );
+
+		$icon = Svg_Sanitizer::sanitize( $this->fixture( 'figma.svg' ) );
+		$this->assertStringContainsString( '#0ACF83', $icon['b'] );
+
+		// Mask colors shape the icon; only the painted color changes.
+		$icon = Svg_Sanitizer::sanitize( '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><mask id="m"><rect width="24" height="24" fill="white"/><circle cx="12" cy="12" r="4" fill="black"/></mask><rect width="24" height="24" fill="#123456" mask="url(#m)"/></svg>' );
+		$this->assertStringContainsString( 'fill="currentColor" mask="url(#m)"', $icon['b'] );
+		$this->assertStringContainsString( 'fill="white"', $icon['b'] );
+		$this->assertStringContainsString( 'fill="black"', $icon['b'] );
+	}
 }

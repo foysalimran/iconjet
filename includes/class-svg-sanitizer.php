@@ -25,6 +25,11 @@ defined( 'ABSPATH' ) || exit;
  * CSS from style="" attributes and simple ".class { }" rules is converted to
  * presentation attributes first, so icons exported from design tools keep
  * their colors after <style> is removed.
+ *
+ * Icons drawn in a single color (e.g. fill="#000000" from SVG Repo, Figma
+ * or Illustrator) get currentColor instead, so they follow the color set in
+ * the block, shortcode or Elementor. Icons with two or more colors or a
+ * gradient keep their colors.
  */
 final class Svg_Sanitizer {
 
@@ -56,6 +61,16 @@ final class Svg_Sanitizer {
 	 * Root attributes kept as icon paint attributes.
 	 */
 	const ROOT_PAINT = array( 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'fill-rule', 'clip-rule' );
+
+	/**
+	 * Attributes that hold a color.
+	 */
+	const COLOR_ATTRS = array( 'fill', 'stroke', 'stop-color', 'color' );
+
+	/**
+	 * Paint values that are not a color of the icon's own.
+	 */
+	const NOT_COLORS = array( '', 'none', 'currentcolor', 'transparent', 'inherit', 'initial', 'unset' );
 
 	/**
 	 * Sanitize an SVG document.
@@ -109,6 +124,7 @@ final class Svg_Sanitizer {
 		self::inline_css( $doc );
 		self::prune( $root );
 		self::resolve_uses( $doc );
+		self::use_current_color( $root );
 
 		$attrs = array();
 		foreach ( self::ROOT_PAINT as $name ) {
@@ -148,6 +164,90 @@ final class Svg_Sanitizer {
 			'b' => $body,
 			'a' => $attrs,
 		);
+	}
+
+	/**
+	 * Replace the color of a single-color icon with currentColor.
+	 *
+	 * Colors inside <clipPath> and <mask> are left out: they shape the icon
+	 * instead of painting it (a mask needs its black and white). A gradient
+	 * reference (url(#id)) counts as more than one color.
+	 *
+	 * @param \DOMElement $root Root <svg>.
+	 */
+	private static function use_current_color( \DOMElement $root ) {
+		$painted = array( $root );
+		foreach ( $root->getElementsByTagName( '*' ) as $element ) {
+			if ( ! self::inside( $element, array( 'clippath', 'mask' ) ) ) {
+				$painted[] = $element;
+			}
+		}
+
+		$colors = array();
+		foreach ( $painted as $element ) {
+			foreach ( self::COLOR_ATTRS as $name ) {
+				$value = strtolower( trim( $element->getAttribute( $name ) ) );
+				if ( in_array( $value, self::NOT_COLORS, true ) ) {
+					continue;
+				}
+				if ( 0 === strpos( $value, 'url(' ) ) {
+					return;
+				}
+				$colors[ self::normalize_color( $value ) ] = true;
+			}
+		}
+		if ( 1 !== count( $colors ) ) {
+			return;
+		}
+
+		$color = key( $colors );
+		foreach ( $painted as $element ) {
+			foreach ( self::COLOR_ATTRS as $name ) {
+				if ( $element->hasAttribute( $name ) && self::normalize_color( strtolower( trim( $element->getAttribute( $name ) ) ) ) === $color ) {
+					$element->setAttribute( $name, 'currentColor' );
+				}
+			}
+		}
+	}
+
+	/**
+	 * Whether an element is inside one of the given elements.
+	 *
+	 * @param \DOMElement $element Element.
+	 * @param string[]    $names   Lowercase element names.
+	 * @return bool
+	 */
+	private static function inside( \DOMElement $element, array $names ) {
+		for ( $node = $element->parentNode; $node instanceof \DOMElement; $node = $node->parentNode ) {
+			if ( in_array( strtolower( $node->localName ), $names, true ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * One spelling per color: "#000", "#000000", "black" and "rgb(0,0,0)"
+	 * are the same.
+	 *
+	 * @param string $value Lowercase color.
+	 * @return string
+	 */
+	private static function normalize_color( $value ) {
+		$named = array(
+			'black' => '#000000',
+			'white' => '#ffffff',
+		);
+		if ( isset( $named[ $value ] ) ) {
+			return $named[ $value ];
+		}
+		if ( preg_match( '/^#([0-9a-f])([0-9a-f])([0-9a-f])$/', $value, $m ) ) {
+			return '#' . $m[1] . $m[1] . $m[2] . $m[2] . $m[3] . $m[3];
+		}
+		if ( preg_match( '/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/', $value, $m ) ) {
+			return sprintf( '#%02x%02x%02x', min( 255, (int) $m[1] ), min( 255, (int) $m[2] ), min( 255, (int) $m[3] ) );
+		}
+		return $value;
 	}
 
 	/**
@@ -289,8 +389,8 @@ final class Svg_Sanitizer {
 			}
 			$prop  = strtolower( trim( $pair[0] ) );
 			$value = trim( $pair[1] );
-			// Paint values only: colors, numbers, keywords, url(#local-id).
-			if ( in_array( $prop, self::CSS_PROPS, true ) && preg_match( '/^(?:[\w#%.,\s-]+|url\(#[\w-]+\))$/', $value ) ) {
+			// Paint values only: colors (incl. rgb/rgba), numbers, keywords, url(#local-id).
+			if ( in_array( $prop, self::CSS_PROPS, true ) && preg_match( '/^(?:[\w#%.,\s-]+|url\(#[\w-]+\)|rgba?\([\d.%,\s]+\))$/i', $value ) ) {
 				$out[ $prop ] = $value;
 			}
 		}

@@ -104,7 +104,7 @@ No. Iconjet adds new packs to Elementor's Icon Library and leaves the built-in F
 
 = Can I upload my own icons? =
 
-Yes. Administrators can upload SVG files under **Iconjet → Custom Icons**. Every file is sanitized before it is saved: scripts, event handlers and external references are removed, and files with a DOCTYPE or entity declarations are rejected. Each uploaded file can be up to 50 KB, and the icon must be 20 KB or smaller after sanitizing. You can store up to 500 custom icons. Custom icons appear in every icon picker, in the shortcodes and in Elementor.
+Yes. Administrators can upload SVG files under **Iconjet → Custom Icons**. Every file is sanitized before it is saved: scripts, event handlers and external references are removed, and files with a DOCTYPE or entity declarations are rejected. Each uploaded file can be up to 50 KB, and the icon must be 20 KB or smaller after sanitizing. You can store up to 500 custom icons. Custom icons appear in every icon picker, in the shortcodes and in Elementor. Icons drawn in a single color follow the color you choose; icons with two or more colors keep their own colors.
 
 = What happens when I turn off an icon pack? =
 
