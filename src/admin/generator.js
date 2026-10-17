@@ -1,5 +1,4 @@
 import { __ } from '@wordpress/i18n';
-import apiFetch from '@wordpress/api-fetch';
 import {
 	BaseControl,
 	Button,
@@ -15,7 +14,6 @@ import {
 	TextareaControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { useDebounce } from '@wordpress/compose';
 import { useEffect, useMemo, useState } from '@wordpress/element';
 import { getQueryArg } from '@wordpress/url';
 
@@ -26,6 +24,7 @@ import SocialProfiles from '../shared/social-profiles';
 import { STYLE_OPTIONS } from '../shared/social-styles';
 import { getPacks, getPlatforms } from '../shared/api';
 import { withScheme } from '../shared/url';
+import useShortcodePreview, { previewKey } from '../shared/use-preview';
 
 const ALIGN_OPTIONS = [
 	{ value: '', label: __( 'Default', 'iconjet' ) },
@@ -331,9 +330,6 @@ export default function GeneratorPage() {
 		newTab: true,
 		nofollow: false,
 	} );
-	const [ preview, setPreview ] = useState( '' );
-	const [ previewing, setPreviewing ] = useState( false );
-
 	useEffect( () => {
 		getPacks()
 			.then( ( data ) => {
@@ -359,33 +355,14 @@ export default function GeneratorPage() {
 		? buildShortcode( mode === 'icon' ? 'iconjet' : 'iconjet_social', atts )
 		: '';
 
-	// Preview through the server's shortcode callbacks: the same renderer as the frontend.
-	const requestPreview = useDebounce( ( type, data ) => {
-		apiFetch( {
-			path: '/iconjet/v1/preview',
-			method: 'POST',
-			data: { type, atts: data },
-		} )
-			.then( ( response ) => setPreview( response.html ) )
-			.catch( () => setPreview( '' ) )
-			.finally( () => setPreviewing( false ) );
-	}, 250 );
-
-	useEffect( () => {
-		if ( ! ready ) {
-			setPreview( '' );
-			return;
-		}
-		const raw = getAtts( mode, icon, social, defs, false );
-		const data = {};
-		Object.keys( raw ).forEach( ( key ) => {
-			if ( raw[ key ] !== '' && raw[ key ] !== undefined ) {
-				data[ key ] = String( raw[ key ] );
-			}
-		} );
-		setPreviewing( true );
-		requestPreview( mode, data );
-	}, [ atts, ready, mode, icon, social, defs, requestPreview ] );
+	// Preview through the server's shortcode callbacks: the same renderer as
+	// the frontend. The key is a string, so the preview is only requested
+	// when the shortcode really changes.
+	const request = ready
+		? previewKey( mode, getAtts( mode, icon, social, defs, false ) )
+		: '';
+	const { html: preview, loading: previewing } =
+		useShortcodePreview( request );
 
 	return (
 		<div className="iconjet-generator">

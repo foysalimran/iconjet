@@ -30,4 +30,9 @@ vendor-prefixed/composer
 vendor-prefixed/enshrined/svg-sanitize/src/svg-scanner.php
 
 .eslintrc.js
+jest.config.js
 src/admin/test
+
+# Screen recordings
+*.gif
+CleanShot*

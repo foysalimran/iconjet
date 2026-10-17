@@ -17,6 +17,7 @@
 # OS / editor
 .DS_Store
 .idea/
+CleanShot*
 .vscode/
 
 # Test runner
