@@ -151,7 +151,7 @@ export default function CustomIconsPage() {
 					<div className="iconjet-custom__drop">
 						<p>
 							{ __(
-								'Drop SVG files here, or choose them from your computer. Every file is sanitized: scripts, event handlers and external references are removed. Maximum 50 KB per file.',
+								'Drop SVG files here, or choose them from your computer. Every file is sanitized: scripts, event handlers and external references are removed. Maximum 50 KB per file, and 20 KB after sanitizing.',
 								'iconjet'
 							) }
 						</p>

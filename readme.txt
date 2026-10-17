@@ -8,7 +8,7 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Lightweight SVG icons and social icons for Gutenberg, Elementor, and any page builder. 100% free.
+21,000+ lightweight SVG icons and social icons for Gutenberg, Elementor and any page builder. 100% free.
 
 == Description ==
 
@@ -20,29 +20,29 @@ Every feature is free. There is no Pro version and nothing is locked.
 
 * **Only the icons you use are loaded.** Icons are output as inline SVG. No icon font files, no extra CSS loaded on every page.
 * **One plugin for every editor.** Gutenberg blocks, Elementor's built-in Icon Library, and shortcodes for every other builder. No need for a separate icon plugin per builder.
-* **Social icons included.** A ready-made Social Icons block and shortcode with official brand colors, so you don't need a second plugin for social links.
+* **Social icons included.** A ready-made Iconjet Social Icons block and shortcode with official brand colors, so you don't need a second plugin for social links.
 
 = Works with =
 
 * **Gutenberg (Block Editor)** – Iconjet Icon block and Iconjet Social Icons block (they work in the Site Editor, Query Loops and the Navigation block too)
-* **Elementor** – All icon packs except Font Awesome (which Elementor already includes) added directly to Elementor's built-in Icon Library, so they work in every Elementor widget that has an icon option. Social logos from Iconjet packs get their brand colors in Elementor's Social Icons widget
+* **Elementor** – All icon packs except Font Awesome (which Elementor already includes) added directly to Elementor's built-in Icon Library, so they work in every Elementor widget that has an icon option. Social logos from Iconjet packs get their brand colors in Elementor's Social Icons widget.
 * **Any other builder** – Divi, Beaver Builder, Bricks, Oxygen, WPBakery, the Classic Editor and widgets, using shortcodes
 
 = Icon packs included =
 
-* Lucide
-* Tabler Icons
-* Phosphor Icons
-* Bootstrap Icons
-* Material Symbols
-* Simple Icons (brand and social logos)
-* Font Awesome Free (block editor and shortcodes only, since Elementor already includes it)
+* Lucide (2,121 icons)
+* Tabler Icons (5,166 icons)
+* Phosphor Icons (1,512 icons)
+* Bootstrap Icons (2,078 icons)
+* Material Symbols (3,927 icons)
+* Simple Icons (3,463 brand and social logos)
+* Font Awesome Free (2,883 icons; block editor and shortcodes only, since Elementor already includes it)
 
 Turn any pack on or off from the settings page.
 
 = Social icons =
 
-* 60+ social platforms ready to use: Facebook, X, Instagram, LinkedIn, YouTube, TikTok, WhatsApp, Telegram, Pinterest, Threads, Discord, GitHub and more
+* 70+ social platforms ready to use: Facebook, X, Instagram, LinkedIn, YouTube, TikTok, WhatsApp, Telegram, Pinterest, Threads, Discord, GitHub and more
 * Official brand colors with one click, or your own colors
 * Shapes: circle, square, rounded, or icon only
 * Size, spacing and hover color controls
@@ -54,7 +54,7 @@ Turn any pack on or off from the settings page.
 * Size, color, background, padding, border radius and rotation
 * Add a link to any icon
 * Fast icon search with categories and recently used icons
-* Upload your own SVG icons (sanitized for security, administrators only, up to 50 KB per file and 500 custom icons)
+* Upload your own SVG icons (sanitized for security, administrators only, files up to 50 KB that must be 20 KB or smaller after sanitizing, up to 500 custom icons)
 * Accessibility built in: aria-label for linked icons, aria-hidden for decorative icons
 * Translation ready and RTL supported
 
@@ -104,7 +104,7 @@ No. Iconjet adds new packs to Elementor's Icon Library and leaves the built-in F
 
 = Can I upload my own icons? =
 
-Yes. Administrators can upload SVG files under **Iconjet → Custom Icons**. Every file is sanitized before it is saved: scripts, event handlers and external references are removed, and files with a DOCTYPE or entity declarations are rejected. Each file can be up to 50 KB, and you can store up to 500 custom icons. Custom icons appear in every icon picker, in the shortcodes and in Elementor.
+Yes. Administrators can upload SVG files under **Iconjet → Custom Icons**. Every file is sanitized before it is saved: scripts, event handlers and external references are removed, and files with a DOCTYPE or entity declarations are rejected. Each uploaded file can be up to 50 KB, and the icon must be 20 KB or smaller after sanitizing. You can store up to 500 custom icons. Custom icons appear in every icon picker, in the shortcodes and in Elementor.
 
 = What happens when I turn off an icon pack? =
 
@@ -121,6 +121,12 @@ Icons added with the Iconjet Icon and Iconjet Social Icons blocks are saved as S
 = What does deleting the plugin remove? =
 
 Deleting Iconjet from the Plugins screen removes its settings, its icon cache and your uploaded custom icons. Content made with the blocks keeps its saved SVG markup.
+
+== Privacy ==
+
+Iconjet does not collect or send any data, does not set cookies and makes no requests to external servers. Icons are served from the plugin's own files on your site, and nothing is added to your site's frontend except the inline SVG and small stylesheets, only on pages that use Iconjet icons.
+
+The only thing Iconjet remembers is your list of recently used icons in the icon picker. It is kept in your own browser (localStorage) and is never sent anywhere.
 
 == Screenshots ==
 
