@@ -27,7 +27,7 @@ Core differentiators (must be true in the implementation):
 - PHP namespace: `Iconjet`
 - Function/option/hook prefix: `iconjet_` (options, transients, hooks, REST namespace `iconjet/v1`, CSS classes `iconjet-`)
 - Shortcodes: `[iconjet]` and `[iconjet_social]`
-- Plugin URI: `https://iconjet.dev`, Author: `ThemeAtelier`, Author URI: `https://themeatelier.net` (readme Contributors stays `faysal61`)
+- Plugin URI: `https://themeatelier.net/iconjet` (moves to `https://iconjet.dev` in a later release), Author: `ThemeAtelier`, Author URI: `https://themeatelier.net` (readme Contributors stays `faysal61`)
 - Requires WordPress 6.6+, PHP 7.4+, Tested up to 7.1
 - License: GPLv2 or later
 - A finished `readme.txt` already exists in the project root. Keep it as the source of truth for features; if implementation forces a change, update the readme to match reality. Never claim a feature that isn't implemented.

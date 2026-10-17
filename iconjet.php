@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Iconjet
- * Plugin URI:        https://iconjet.dev
+ * Plugin URI:        https://themeatelier.net/iconjet
  * Description:       Lightweight SVG icons and social icons for Gutenberg, Elementor, and any page builder.
  * Version:           1.0.0
  * Requires at least: 6.6

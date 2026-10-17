@@ -1,6 +1,6 @@
 === Iconjet ===
 Contributors: faysal61
-Tags: icons, svg icons, social icons, elementor icons, icon block
+Tags: icons, svg, social icons, elementor, icon block
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
