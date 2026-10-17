@@ -1,0 +1,752 @@
+# Copyright (C) 2026 ThemeAtelier
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Iconjet 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/iconjet/\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-17T05:41:10+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.7.1\n"
+"X-Domain: iconjet\n"
+
+#. Plugin Name of the plugin
+#: includes/class-admin.php:64
+#: includes/class-admin.php:67
+msgid "Iconjet"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://iconjet.dev"
+msgstr ""
+
+#. Description of the plugin
+msgid "Lightweight SVG icons and social icons for Gutenberg, Elementor, and any page builder."
+msgstr ""
+
+#. Author of the plugin
+msgid "ThemeAtelier"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://themeatelier.net"
+msgstr ""
+
+#: includes/class-admin.php:49
+msgid "Icon Library"
+msgstr ""
+
+#: includes/class-admin.php:50
+msgid "Shortcode Generator"
+msgstr ""
+
+#: includes/class-admin.php:51
+msgid "Custom Icons"
+msgstr ""
+
+#: includes/class-admin.php:52
+#: includes/class-admin.php:82
+#: build/blocks/social-icons/index.js:4
+msgid "Settings"
+msgstr ""
+
+#: includes/class-admin.php:98
+msgid "Iconjet needs JavaScript to show this page."
+msgstr ""
+
+#: includes/class-custom-icons.php:49
+msgid "Iconjet custom icons"
+msgstr ""
+
+#. translators: %d: maximum number of custom icons.
+#: includes/class-custom-icons.php:130
+msgid "You can store up to %d custom icons."
+msgstr ""
+
+#: includes/class-custom-icons.php:138
+msgid "This icon is too complex: it must be 20 KB or smaller after sanitizing. Simplify it in your design tool and try again."
+msgstr ""
+
+#: includes/class-custom-icons.php:142
+msgid "Custom icon"
+msgstr ""
+
+#: includes/class-custom-icons.php:183
+#: includes/class-rest-controller.php:259
+msgid "Icon not found."
+msgstr ""
+
+#: includes/class-custom-icons.php:186
+msgid "The name cannot be empty."
+msgstr ""
+
+#: includes/class-custom-icons.php:234
+#: includes/class-icon-registry.php:97
+#: includes/integrations/class-elementor.php:229
+msgid "Custom"
+msgstr ""
+
+#: includes/class-rest-controller.php:189
+msgid "No file was uploaded."
+msgstr ""
+
+#: includes/class-rest-controller.php:192
+#: includes/class-rest-controller.php:204
+msgid "Invalid upload."
+msgstr ""
+
+#: includes/class-rest-controller.php:195
+msgid "Only SVG files can be uploaded."
+msgstr ""
+
+#: includes/class-rest-controller.php:198
+#: includes/class-svg-sanitizer.php:71
+msgid "SVG files must be 50 KB or smaller."
+msgstr ""
+
+#: includes/class-settings.php:80
+msgid "Iconjet settings."
+msgstr ""
+
+#: includes/class-svg-sanitizer.php:68
+msgid "The file is empty."
+msgstr ""
+
+#: includes/class-svg-sanitizer.php:76
+msgid "The file contains a DOCTYPE or entity declarations, which are not allowed for security reasons. Export the SVG again without them."
+msgstr ""
+
+#: includes/class-svg-sanitizer.php:90
+#: includes/class-svg-sanitizer.php:101
+msgid "The file is not a valid SVG."
+msgstr ""
+
+#: includes/class-svg-sanitizer.php:106
+msgid "The SVG needs a viewBox or a numeric width and height."
+msgstr ""
+
+#: includes/class-svg-sanitizer.php:136
+msgid "The SVG has no drawable shapes left after sanitizing."
+msgstr ""
+
+#. translators: %s: icon pack name.
+#: includes/integrations/class-elementor.php:251
+msgid "%s (Iconjet)"
+msgstr ""
+
+#: build/admin/index.js:1
+#: build/blocks/icon/index.js:1
+msgid "The icon packs could not be loaded."
+msgstr ""
+
+#: build/admin/index.js:1
+#: build/blocks/icon/index.js:1
+msgid "This icon pack could not be loaded."
+msgstr ""
+
+#. translators: %d: number of icons.
+#: build/admin/index.js:2
+#: build/blocks/icon/index.js:2
+msgid "%d icon"
+msgid_plural "%d icons"
+msgstr[0] ""
+msgstr[1] ""
+
+#: build/admin/index.js:2
+#: build/blocks/icon/index.js:2
+msgid "Icons you choose will appear here."
+msgstr ""
+
+#: build/admin/index.js:2
+#: build/admin/index.js:18
+#: build/blocks/icon/index.js:2
+msgid "Icon packs"
+msgstr ""
+
+#: build/admin/index.js:2
+#: build/blocks/icon/index.js:2
+msgid "Recently used"
+msgstr ""
+
+#: build/admin/index.js:2
+#: build/blocks/icon/index.js:2
+msgid "Search icons"
+msgstr ""
+
+#: build/admin/index.js:2
+#: build/blocks/icon/index.js:2
+msgid "Category"
+msgstr ""
+
+#: build/admin/index.js:2
+#: build/blocks/icon/index.js:2
+msgid "All categories"
+msgstr ""
+
+#: build/admin/index.js:2
+#: build/blocks/icon/index.js:2
+msgid "Icons"
+msgstr ""
+
+#. translators: 1: pack name, 2: license name.
+#: build/admin/index.js:3
+#: build/blocks/icon/index.js:3
+msgid "%1$s – %2$s license"
+msgstr ""
+
+#: build/admin/index.js:3
+msgid "Copied to clipboard."
+msgstr ""
+
+#: build/admin/index.js:3
+msgid "Copied!"
+msgstr ""
+
+#: build/admin/index.js:3
+msgid "Select an icon to copy its shortcode or reference."
+msgstr ""
+
+#: build/admin/index.js:3
+#: build/admin/index.js:8
+msgid "Shortcode"
+msgstr ""
+
+#: build/admin/index.js:3
+#: build/admin/index.js:8
+#: build/admin/index.js:14
+msgid "Copy shortcode"
+msgstr ""
+
+#: build/admin/index.js:3
+msgid "Icon reference"
+msgstr ""
+
+#: build/admin/index.js:3
+msgid "Copy reference"
+msgstr ""
+
+#. translators: %s: icon name.
+#: build/admin/index.js:4
+msgid "Customize “%s” in the Shortcode Generator"
+msgstr ""
+
+#: build/admin/index.js:4
+#: build/blocks/icon/index.js:3
+msgid "Choose an icon"
+msgstr ""
+
+#. translators: %s: platform name.
+#: build/admin/index.js:5
+#: build/blocks/social-icons/index.js:2
+msgid "Move %s up"
+msgstr ""
+
+#. translators: %s: platform name.
+#: build/admin/index.js:6
+#: build/blocks/social-icons/index.js:3
+msgid "Move %s down"
+msgstr ""
+
+#. translators: %s: platform name.
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Remove %s"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Add a platform"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Circle"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Rounded"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Square"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Icon only"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Default"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Left"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Center"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Right"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/icon/index.js:3
+msgid "Icon"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "No icon selected"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Change icon"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/icon/index.js:3
+msgid "Choose icon"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/icon/index.js:3
+#: build/blocks/social-icons/index.js:4
+msgid "Size (px)"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Color"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Link (optional)"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Open link in a new tab"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/icon/index.js:3
+msgid "Accessible label"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Describe what the icon means. Leave empty for decorative icons. Linked icons use the icon name when empty."
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Extra CSS classes (optional)"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Style"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Spacing (px)"
+msgstr ""
+
+#: build/admin/index.js:7
+msgid "Alignment"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Use brand colors"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Icon color"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Background color"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Hover color"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Open links in a new tab"
+msgstr ""
+
+#: build/admin/index.js:7
+#: build/blocks/social-icons/index.js:4
+msgid "Add rel=\"nofollow\""
+msgstr ""
+
+#. translators: %s: file size in KB.
+#: build/admin/index.js:8
+msgid "%s KB"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "The upload timed out. Try again."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "The server sent an unreadable response. The file may or may not have been saved; reload the page to check."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "The server could not be reached. Check your connection and try again."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "The upload failed for an unknown reason."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Icon [iconjet]"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Social icons [iconjet_social]"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Preview"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Choose an icon or add a profile URL to see a preview."
+msgstr ""
+
+#. translators: 1: file size, 2: maximum size.
+#: build/admin/index.js:9
+msgid "Too large (%1$s). The maximum is %2$s."
+msgstr ""
+
+#: build/admin/index.js:9
+msgid "Not an SVG file."
+msgstr ""
+
+#: build/admin/index.js:9
+msgid "The server response did not contain the icon. Reload the page to check whether it was saved."
+msgstr ""
+
+#. translators: 1: accepted count, 2: rejected count.
+#: build/admin/index.js:10
+msgid "%1$d accepted, %2$d rejected."
+msgstr ""
+
+#: build/admin/index.js:10
+msgid "Icon renamed."
+msgstr ""
+
+#: build/admin/index.js:10
+msgid "Upload SVG icons"
+msgstr ""
+
+#: build/admin/index.js:10
+msgid "Drop SVG files here, or choose them from your computer. Every file is sanitized: scripts, event handlers and external references are removed. Maximum 50 KB per file."
+msgstr ""
+
+#: build/admin/index.js:10
+msgid "Choose SVG files"
+msgstr ""
+
+#: build/admin/index.js:10
+msgid "Drop SVG files to upload"
+msgstr ""
+
+#: build/admin/index.js:10
+msgid "Upload results"
+msgstr ""
+
+#: build/admin/index.js:10
+msgid "Uploading…"
+msgstr ""
+
+#. translators: %s: icon reference.
+#: build/admin/index.js:11
+msgid "Accepted as %s (preview shows the sanitized result)"
+msgstr ""
+
+#. translators: %s: reason.
+#: build/admin/index.js:12
+msgid "Rejected: %s"
+msgstr ""
+
+#. translators: %d: number of icons.
+#: build/admin/index.js:13
+msgid "%d custom icon"
+msgid_plural "%d custom icons"
+msgstr[0] ""
+msgstr[1] ""
+
+#: build/admin/index.js:13
+msgid "Custom icons"
+msgstr ""
+
+#: build/admin/index.js:13
+msgid "The icons could not be loaded."
+msgstr ""
+
+#: build/admin/index.js:13
+msgid "No custom icons yet. Uploaded icons appear in the block picker, the Icon Library and the Shortcode Generator."
+msgstr ""
+
+#: build/admin/index.js:13
+msgid "Name"
+msgstr ""
+
+#. translators: %s: icon reference.
+#: build/admin/index.js:14
+msgid "The reference %s stays the same, so existing content keeps working."
+msgstr ""
+
+#: build/admin/index.js:14
+msgid "Save"
+msgstr ""
+
+#: build/admin/index.js:14
+#: build/admin/index.js:17
+msgid "Cancel"
+msgstr ""
+
+#. translators: %s: icon name.
+#: build/admin/index.js:15
+msgid "Rename %s"
+msgstr ""
+
+#: build/admin/index.js:15
+msgid "Rename"
+msgstr ""
+
+#. translators: %s: icon name.
+#: build/admin/index.js:16
+msgid "Delete %s"
+msgstr ""
+
+#: build/admin/index.js:16
+msgid "Delete"
+msgstr ""
+
+#. translators: %s: icon name.
+#: build/admin/index.js:17
+msgid "Delete “%s”?"
+msgstr ""
+
+#: build/admin/index.js:17
+msgid "Blocks that use this icon keep showing it, because blocks store their SVG. Shortcodes and Elementor widgets that use it will stop showing it. This cannot be undone."
+msgstr ""
+
+#. translators: %s: icon name.
+#: build/admin/index.js:18
+msgid "“%s” was deleted."
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "Delete icon"
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "The settings could not be loaded."
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "Settings saved."
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "The settings could not be saved."
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "Disabled packs are hidden from the icon pickers and Elementor. Icons already used in your content keep displaying."
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "Defaults"
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "Default icon size (px)"
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "Used for new Icon blocks and for [iconjet] shortcodes without a size."
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "Default social icon style"
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "Used for new Social Icons blocks and for [iconjet_social] shortcodes without a style."
+msgstr ""
+
+#: build/admin/index.js:18
+msgid "Save settings"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Replace icon"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Size"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Rotation"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Rotation (degrees)"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Flip"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Flip horizontally"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Flip vertically"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Describe what the icon means. Leave empty for decorative icons, which screen readers skip."
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Link"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "URL"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Open in new tab"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Link rel"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "For example: nofollow, sponsored"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Linked icons need an accessible label. Until you add one, the icon name is used:"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Iconjet Icon"
+msgstr ""
+
+#: build/blocks/icon/index.js:3
+msgid "Choose an icon from the library or from your uploaded icons."
+msgstr ""
+
+#: build/blocks/social-icons/index.js:4
+msgid "The social platforms could not be loaded."
+msgstr ""
+
+#: build/blocks/social-icons/index.js:4
+msgid "Iconjet Social Icons"
+msgstr ""
+
+#: build/blocks/social-icons/index.js:4
+msgid "Add the platforms you want to link to."
+msgstr ""
+
+#: build/blocks/social-icons/index.js:4
+msgid "Profiles"
+msgstr ""
+
+#: build/blocks/social-icons/index.js:4
+msgid "Colors"
+msgstr ""
+
+#: build/blocks/social-icons/index.js:4
+msgid "Custom colors"
+msgstr ""
+
+#. translators: %s: platform name.
+#: build/blocks/social-icons/index.js:5
+msgid "%s: add a URL in the block settings"
+msgstr ""
+
+#: build/blocks/icon/block.json
+msgctxt "block title"
+msgid "Iconjet Icon"
+msgstr ""
+
+#: build/blocks/icon/block.json
+msgctxt "block description"
+msgid "An SVG icon from the Iconjet library or your own uploaded icons."
+msgstr ""
+
+#: build/blocks/icon/block.json
+msgctxt "block keyword"
+msgid "icon"
+msgstr ""
+
+#: build/blocks/icon/block.json
+msgctxt "block keyword"
+msgid "svg"
+msgstr ""
+
+#: build/blocks/icon/block.json
+msgctxt "block keyword"
+msgid "symbol"
+msgstr ""
+
+#: build/blocks/icon/block.json
+#: build/blocks/social-icons/block.json
+msgctxt "block keyword"
+msgid "iconjet"
+msgstr ""
+
+#: build/blocks/social-icons/block.json
+msgctxt "block title"
+msgid "Iconjet Social Icons"
+msgstr ""
+
+#: build/blocks/social-icons/block.json
+msgctxt "block description"
+msgid "Links to your social profiles with official brand colors."
+msgstr ""
+
+#: build/blocks/social-icons/block.json
+msgctxt "block keyword"
+msgid "social"
+msgstr ""
+
+#: build/blocks/social-icons/block.json
+msgctxt "block keyword"
+msgid "links"
+msgstr ""
+
+#: build/blocks/social-icons/block.json
+msgctxt "block keyword"
+msgid "share"
+msgstr ""
+
+#: build/blocks/social-icons/block.json
+msgctxt "block keyword"
+msgid "follow"
+msgstr ""

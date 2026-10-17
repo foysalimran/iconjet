@@ -86,7 +86,10 @@ export default function SocialProfiles( {
 							placeholder={ platform ? platform.placeholder : '' }
 							value={ item.url }
 							onChange={ ( value ) =>
-								update( index, { url: withScheme( value ) } )
+								update( index, { url: value } )
+							}
+							onBlur={ () =>
+								update( index, { url: withScheme( item.url ) } )
 							}
 						/>
 						<Button

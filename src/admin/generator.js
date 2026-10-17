@@ -138,7 +138,8 @@ function IconForm( { state, setState, defaultSize } ) {
 				type="url"
 				label={ __( 'Link (optional)', 'iconjet' ) }
 				value={ state.link }
-				onChange={ ( link ) => set( { link: withScheme( link ) } ) }
+				onChange={ ( link ) => set( { link } ) }
+				onBlur={ () => set( { link: withScheme( state.link ) } ) }
 			/>
 			<ToggleControl
 				__nextHasNoMarginBottom

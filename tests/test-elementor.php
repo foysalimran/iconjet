@@ -122,8 +122,14 @@ class Test_Elementor extends WP_UnitTestCase {
 
 	public function test_social_icons_widget_gets_brand_classes_and_names() {
 		$items = array(
-			array( '_id' => 'aaa1111', 'social_icon' => $this->icon( 'simple', 'facebook' ) ),
-			array( '_id' => 'bbb2222', 'social_icon' => $this->icon( 'tabler', 'heart' ) ),
+			array(
+				'_id'         => 'aaa1111',
+				'social_icon' => $this->icon( 'simple', 'facebook' ),
+			),
+			array(
+				'_id'         => 'bbb2222',
+				'social_icon' => $this->icon( 'tabler', 'heart' ),
+			),
 			array(
 				'_id'         => 'ccc3333',
 				'social_icon' => array(
@@ -132,7 +138,7 @@ class Test_Elementor extends WP_UnitTestCase {
 				),
 			),
 		);
-		$html = '';
+		$html  = '';
 		foreach ( $items as $item ) {
 			$html .= $this->social_item_html( $item['_id'], $item['social_icon']['value'] );
 		}

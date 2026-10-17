@@ -25,7 +25,7 @@ Every feature is free. There is no Pro version and nothing is locked.
 = Works with =
 
 * **Gutenberg (Block Editor)** – Iconjet Icon block and Iconjet Social Icons block (they work in the Site Editor, Query Loops and the Navigation block too)
-* **Elementor** – All icon packs except Font Awesome (which Elementor already includes) added directly to Elementor's built-in Icon Library, so they work in every Elementor widget that has an icon option
+* **Elementor** – All icon packs except Font Awesome (which Elementor already includes) added directly to Elementor's built-in Icon Library, so they work in every Elementor widget that has an icon option. Social logos from Iconjet packs get their brand colors in Elementor's Social Icons widget
 * **Any other builder** – Divi, Beaver Builder, Bricks, Oxygen, WPBakery, the Classic Editor and widgets, using shortcodes
 
 = Icon packs included =
@@ -47,13 +47,14 @@ Turn any pack on or off from the settings page.
 * Shapes: circle, square, rounded, or icon only
 * Size, spacing and hover color controls
 * Open links in a new tab and add rel="nofollow" if needed
+* In Elementor's Social Icons widget, logos from Iconjet packs (Simple Icons and the generic email, phone, RSS and website icons) use their brand colors. Elementor's own Custom and hover colors still apply
 
 = Icon features =
 
 * Size, color, background, padding, border radius and rotation
 * Add a link to any icon
 * Fast icon search with categories and recently used icons
-* Upload your own SVG icons (sanitized for security, administrators only)
+* Upload your own SVG icons (sanitized for security, administrators only, up to 50 KB per file and 500 custom icons)
 * Accessibility built in: aria-label for linked icons, aria-hidden for decorative icons
 * Translation ready and RTL supported
 
@@ -103,20 +104,34 @@ No. Iconjet adds new packs to Elementor's Icon Library and leaves the built-in F
 
 = Can I upload my own icons? =
 
-Yes. Administrators can upload SVG files. Every file is sanitized before it is saved.
+Yes. Administrators can upload SVG files under **Iconjet → Custom Icons**. Every file is sanitized before it is saved: scripts, event handlers and external references are removed, and files with a DOCTYPE or entity declarations are rejected. Each file can be up to 50 KB, and you can store up to 500 custom icons. Custom icons appear in every icon picker, in the shortcodes and in Elementor.
+
+= What happens when I turn off an icon pack? =
+
+The pack is hidden from the icon pickers and from Elementor's Icon Library. Icons from that pack that are already in your content keep showing on the site, but they may look empty in the Elementor editor until you turn the pack on again.
+
+= Do social icons keep their brand colors in Elementor? =
+
+Yes. In Elementor's Social Icons widget, choose a logo from an Iconjet pack (for example Facebook from Simple Icons) and it uses that brand's color. If you set the widget's color to Custom, or set a hover color, Elementor uses your colors instead. LinkedIn, Slack, Weibo and CodePen logos come from Font Awesome, which Elementor already includes with its own colors.
 
 = What happens to my icons if I deactivate the plugin? =
 
 Icons added with the Iconjet Icon and Iconjet Social Icons blocks are saved as SVG in your content and stay visible, including their size, colors and shape. Hover colors need the plugin to be active. Shortcodes and Elementor icons from Iconjet packs will stop displaying until the plugin is active again.
 
+= What does deleting the plugin remove? =
+
+Deleting Iconjet from the Plugins screen removes its settings, its icon cache and your uploaded custom icons. Content made with the blocks keeps its saved SVG markup.
+
 == Screenshots ==
 
-1. Icon picker with search and categories
-2. Iconjet Icon block settings in the block editor
+1. Icon picker with pack tabs, search and categories
+2. Iconjet Icon block and its settings in the block editor
 3. Iconjet Social Icons block with brand colors
-4. New icon packs inside Elementor's Icon Library
-5. Settings page with icon pack toggles
-6. Shortcode Generator
+4. Iconjet packs in Elementor's Icon Library
+5. Elementor's Social Icons widget with Iconjet brand logos
+6. Shortcode Generator with live preview
+7. Custom Icons page for uploading your own SVG icons
+8. Settings page with icon pack toggles
 
 == Changelog ==
 
@@ -125,13 +140,18 @@ Icons added with the Iconjet Icon and Iconjet Social Icons blocks are saved as S
 
 == Source Code ==
 
-The plugin ships with its full, human-readable source. The JavaScript for the blocks and admin screens is in the `src/` folder and is compiled into `build/` with `@wordpress/scripts`. The icon data in `assets/packs/` is generated from the original npm packages by `tools/build-icons.mjs`.
+The plugin ships with its full, human-readable source, and the development repository is public at https://github.com/foysalimran/iconjet.
+
+The JavaScript for the blocks and admin screens is in the `src/` folder and is compiled into `build/` with `@wordpress/scripts`. The icon data in `assets/packs/`, the social platform data in `assets/social/` and the Elementor files in `assets/elementor/` are generated from the original npm packages by `tools/build-icons.mjs` (the platform list is in `tools/social-platforms.mjs`). The SVG sanitizer library in `vendor-prefixed/` is installed with Composer and namespaced with Strauss.
 
 To rebuild:
 
-1. Run `npm install`
-2. Run `npm run build:icons` to regenerate the icon packs
-3. Run `npm run build` to compile the JavaScript
+1. Run `composer install`
+2. Run `npm install`
+3. Run `npm run build:icons` to regenerate the icon data
+4. Run `npm run build` to compile the JavaScript
+
+`npm run zip` runs all of the above and creates the release zip.
 
 == Third-Party Resources ==
 
@@ -146,3 +166,7 @@ This plugin bundles the following icon sets. All are GPL-compatible.
 * Font Awesome Free – Icons: CC BY 4.0 – https://fontawesome.com/license/free
 
 Brand logos are trademarks of their respective owners and are provided for identifying those brands only.
+
+Uploaded SVG files are cleaned with svg-sanitize by Daryll Doyle (GPL-2.0-or-later) – https://github.com/darylldoyle/svg-sanitizer
+
+The license files for each icon set are in the `licenses/` folder.

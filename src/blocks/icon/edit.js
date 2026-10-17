@@ -239,7 +239,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'URL', 'iconjet' ) }
 						value={ url }
 						onChange={ ( value ) =>
-							setAttributes( { url: withScheme( value ) } )
+							setAttributes( { url: value } )
+						}
+						onBlur={ () =>
+							setAttributes( { url: withScheme( url ) } )
 						}
 					/>
 					{ url && (

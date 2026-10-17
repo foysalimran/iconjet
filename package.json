@@ -12,6 +12,7 @@
 		"lint:css": "wp-scripts lint-style \"src/**/*.scss\"",
 		"lint:php": "composer run lint",
 		"test:js": "wp-scripts test-unit-js",
+		"pot": "wp i18n make-pot . languages/iconjet.pot --slug=iconjet --domain=iconjet --exclude=node_modules,vendor,vendor-prefixed,dist,tests,tools,src",
 		"zip": "node tools/make-zip.mjs"
 	},
 	"devDependencies": {
